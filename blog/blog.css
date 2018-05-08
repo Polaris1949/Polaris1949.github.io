@@ -1,0 +1,28 @@
+body h1 {
+    padding-bottom: 0.3em;
+    font-size: 2em;
+    border-bottom: 1px solid #eaecef;
+}
+
+body a {
+	background-color: transparent;
+	box-sizing: border-box;
+    color: #0366d6;
+    text-decoration: none;
+}
+
+body table th, body table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+	display: table-cell;
+    vertical-align: inherit;
+}
+
+body table {
+	margin: 0 auto;
+}
+
+p.table-title {
+	text-align: center;
+	font-weight: bold;
+}
