@@ -1,0 +1,757 @@
+<html>
+
+<head>
+<meta charset="UTF-8"/>
+<title>26 容器库 | C++17标准</title>
+<link rel="stylesheet" type="text/css" href="blog.css"/>
+<link rel="icon" type="img/x-ico" href="/image/polaris.ico"/>
+</head>
+
+<body>
+
+<h1 id="title">26 容器库</h1>
+<p>译注：翻译进行中。部分过长表格将在翻译完成后修订。将考虑构建英文修订版本。</p>
+
+<h2 id="s1">26.1 简介</h2>
+<ul>
+<li><p><sup>1</sup>&nbsp;本节描述C++程序中可以用来组织信息收集的组件。</p></li>
+<li><p><sup>2</sup>&nbsp;下面几节描述了容器的要求，以及序列容器和关联容器的组件，总结在表82中。</p></li>
+</ul>
+
+<div>
+<p id="table82" class="table-title">表82——容器库总结</p>
+<table>
+<thead><tr>
+<th>子章节</th>
+<th>头文件</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="#s2">26.2</a>&nbsp;要求</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a href="#s3">26.3</a>&nbsp;序列容器</td>
+<td><code>&lt;array&gt;</code><br>
+<code>&lt;deque&gt;</code><br>
+<code>&lt;forward_list&gt;</code><br>
+<code>&lt;list&gt;</code><br>
+<code>&lt;vector&gt;</code></td>
+</tr>
+<tr>
+<td><a href="#s4">26.4</a>&nbsp;关联容器</td>
+<td><code>&lt;map&gt;</code><br>
+<code>&lt;set&gt;</code></td>
+</tr>
+<tr>
+<td><a href="#s5">26.5</a>&nbsp;无序关联容器</td>
+<td><code>&lt;unordered_map&gt;</code><br>
+<code>&lt;unordered_set&gt;</code></td>
+</tr>
+<tr>
+<td><a href="#s6">26.6</a>&nbsp;容器适配器</td>
+<td><code>&lt;queue&gt;</code><br>
+<code>&lt;stack&gt;</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s2">26.2 容器要求</h2>
+<h3 id="s2.1">26.2.1 容器要求简介</h3>
+<ul>
+<li><p><sup>1</sup>&nbsp;容器是存储其它对象的对象。它们通过构造函数、析构函数、插入和删除操作来控制这些对象的分配和释放。</p></li>
+<li><p><sup>2</sup>&nbsp;本节中所有的复杂度要求仅以包含对象的操作数表示。[<i>例：</i>类型<code>vector&lt;vector&lt;int&gt;&gt;</code>的构造函数有线性复杂度，即使拷贝每个包含的<code>vector&lt;int&gt;</code>的复杂度本身就是线性的。<i>——例结束</i>]</p></li>
+<li><p><sup>3</sup>&nbsp;本节中的组件都声明了一个<code>allocator_type</code>，存储在这些组件中的对象应使用<code>allocator_traits&lt;allocator_type&gt;::rebind_traits&lt;U&gt;::construct</code>函数构造并使用<code>allocator_traits&lt;allocator_type&gt;::rebind_traits&lt;U&gt;::destroy</code>函数销毁（<a href="clause23.html#s10.8.2">23.10.8.2</a>），且<code>U</code>是<code>allocator_type::value_type</code>或一种容器使用的内置类型。这些函数仅为容器的元素类型调用，不为容器使用的内置类型调用。[<i>注：</i>这意味着，例如，基于节点的容器可能需要构造包含对齐缓冲区的节点，并调用<code>construct</code>将元素放置到缓冲区中。<i>——注结束</i>]</p></li>
+<li><p><sup>4</sup>&nbsp;在表<a href="#table83">83</a>、<a href="#table84">84</a>和<a href="#table85">85</a>中，<code>X</code>表示一个包含对象类型为<code>T</code>的容器类，<code>a</code>和<code>b</code>表示类型为<code>X</code>的值，<code>u</code>表示一个标识符，<code>r</code>表示类型<code>X</code>的一个非常量值，<code>rv</code>表示类型<code>X</code>的一个非常量右值。</p></li>
+</ul>
+
+<div>
+<p id="table83" class="table-title">表83——容器要求</p>
+<table>
+<thead><tr>
+<th>表达式</th>
+<th>返回类型</th>
+<th>操作<br>语义</th>
+<th>断言/说明<br>前置/后置条件</th>
+<th>复杂度</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>X::value_type</code></td>
+<td><code>T</code></td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>从<code>X</code>中是<code>Erasable</code>（见<a href="#s2.1">26.2.1</a>下方）</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::reference</code></td>
+<td><code>T&amp;</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::const_reference</code></td>
+<td><code>const T&amp;</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::iterator</code></td>
+<td>值类型为<code>T</code>的迭代器类型</td>
+<td>&nbsp;</td>
+<td>任何满足前向迭代器的迭代器类别。<br>可转换为<code>X::const_iterator</code>。</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::const_iterator</code></td>
+<td>值类型为<code>T</code>的常量迭代器类型</td>
+<td>&nbsp;</td>
+<td>任何满足前向迭代器的迭代器类别。</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::difference_type</code></td>
+<td>有符号整数类型</td>
+<td>&nbsp;</td>
+<td>与<code>X::iterator</code>和<code>X::const_iterator</code>的差距类型相同</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::size_type</code></td>
+<td>无符号整数类型</td>
+<td>&nbsp;</td>
+<td><code>size_type</code>能表示<code>difference_type</code>的任意非负值</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X u;</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td><i>后置条件：</i><code>u.empty()</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>X()</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td><i>后置条件：</i><code>X().empty()</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>X(a)</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中<code>CopyInsertable</code>（见下）。<br><i>后置条件：</i><code>a == X(a)</code></td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>X u(a);</code><br><code>X u = a;</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中<code>CopyInsertable</code>（见下）。<br><i>后置条件：</i><code>u == a</code></td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>X u(rv);</code><br><code>X u = rv;</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td><i>后置条件：</i><code>u</code>应与在此次构造前<code>rv</code>拥有的值相等</td>
+<td>（说明B）</td>
+</tr>
+<tr>
+<td><code>a = rv</code></td>
+<td><code>X&amp;</code></td>
+<td><code>a</code>存在的所有元素被移动赋值或销毁</td>
+<td><code>a</code>应与在此次赋值前<code>rv</code>拥有的值相等</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>(&amp;a)-&gt;~X()</code></td>
+<td><code>void</code></td>
+<td>&nbsp;</td>
+<td>析构函数被应用于<code>a</code>的每一个元素；任何获得的内存被释放</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a.begin()</code></td>
+<td><code>iterator</code>；对常量<code>a</code>是<code>const_iterator</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.end()</code></td>
+<td><code>iterator</code>；对常量<code>a</code>是<code>const_iterator</code></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.cbegin()</code></td>
+<td><code>const_iterator</code></td>
+<td><code>const_cast&lt;X const&amp;&gt;(a).begin();</code></td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.cend()</code></td>
+<td><code>const_iterator</code></td>
+<td><code>const_cast&lt;X const&amp;&gt;(a).end();</code></td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a == b</code></td>
+<td>可转换为<code>bool</code></td>
+<td><code>==</code>是一种相等关系。<br><code>equal(a.begin(), a.end(), b.begin(), b.end())</code></td>
+<td><i>要求：</i><code>T</code>为<code>EqualityComparable</code></td>
+<td>若<code>a.size() != b.size()</code>则为常量，否则为线性</td>
+</tr>
+<tr>
+<td><code>a != b</code></td>
+<td>可转换为<code>bool</code></td>
+<td>相当于<code>!(a == b)</code></td>
+<td>&nbsp;</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a.swap(b)</code></td>
+<td><code>void</code></td>
+<td>&nbsp;</td>
+<td>交换<code>a</code>和<code>b</code>的内容</td>
+<td>（说明A）</td>
+</tr>
+<tr>
+<td><code>swap(a, b)</code></td>
+<td><code>void</code></td>
+<td><code>a.swap(b)</code></td>
+<td>&nbsp;</td>
+<td>（说明A）</td>
+</tr>
+<tr>
+<td><code>r = a</code></td>
+<td><code>X&amp;</code></td>
+<td>&nbsp;</td>
+<td><i>后置条件：</i><code>r == a</code></td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a.size()</code></td>
+<td><code>size_type</code></td>
+<td><code>distance(a.begin(), a.end())</code></td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.max_size()</code></td>
+<td><code>size_type</code></td>
+<td>对最大可能容器的<code>distance(a.begin(), a.end())</code></td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.empty()</code></td>
+<td>可转换为<code>bool</code></td>
+<td><code>a.begin() == a.end()</code></td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li><p>那些标记了“（说明A）”或“（说明B）”的条目对于<code>array</code>有线性复杂度，对于所有其它标准容器有常量复杂度。[<i>注：</i>算法<code>equal()</code>在第<a href="clause28.html">28</a>章中定义。<i>——注结束</i>]</p></li>
+<li><p><sup>5</sup>&nbsp;成员函数<code>size()</code>返回容器中的元素个数。元素个数被构造函数、插入和删除的规则所定义。</p></li>
+<li><p><sup>6</sup>&nbsp;<code>begin()</code>返回一个指向容器中首元素的迭代器，<code>end()</code>返回一个容器的逾尾值的迭代器。如果容器为空，那么<code>begin() == end()</code>。</p></li>
+<li><p><sup>7</sup>&nbsp;在下列表达式中：</p></li>
+<pre>
+<!-- class="cpp" -->
+i == j
+i != j
+i &lt; j
+i &lt;= j
+i &gt;= j
+i &gt; j
+i - j
+</pre>
+<li><p>当<code>i</code>和<code>j</code>表示容器的<code>iterator</code>类型的对象，其中一个或两个都可以被指向同一个元素且在语义上没有变化的容器的<code>const_iterator</code>类型的对象替换。</p></li>
+<li><p><sup>8</sup>&nbsp;除非另有说明，在本章节中定义的所有容器都使用分配器获得内存（见<a href="clause20.html#s5.3.5">20.5.3.5</a>）。[<i>注：</i>特别地，容器和迭代器不存储对分配元素的引用而是通过分配器的指针类型，即，作为<code>P</code>类型对象或<code>pointer_traitsY&lt;P&gt;::template rebind&lt;未指定&gt;</code>，且<code>P</code>为<code>allocator_traits&lt;allocator_type&gt;::pointer</code>。<i>——注结束</i>]这些容器类型的复制构造函数通过调用属于被复制的容器的分配器的<code>allocator_traits&lt;allocator_type&gt;::select_on_container_copy_construction</code>获得一个分配器。移动构造函数通过属于被移动容器的分配器的移动构造获得一个分配器。此类分配器的移动构造不应通过异常退出。这些容器类型的所有其它构造函数带有一个<code>const allocator_type&amp;</code>参数。[<i>注：</i>如果构造函数的调用使用可选的分配器参数的默认值，那么<code>Allocator</code>类型必须支持值初始化。<i>——注结束</i>]在每个容器对象的生命周期中或直到分配器被替换为止，此分配器的副本用于由这些构造函数和所有成员函数执行的任何内存分配和元素构造。分配器只能通过赋值或<code>swap()</code>来替换。只要在相应容器的实现中，<code>allocator_traits&lt;allocator_type&gt;::propagate_on_container_copy_assignment::value</code>、<code>allocator_traits&lt;allocator_type&gt;::propagate_on_container_move_assignment::value</code>或<code>allocator_traits&lt;allocator_type&gt;::propagate_on_container_swap::value</code>为真，分配器替换通过复制赋值、移动赋值或分配器的交换来执行。在本章定义的所有容器类型中，成员<code>get_allocator()</code>返回一个用于构造容器的分配器的副本，或如果该分配器已被替换，则是最近替换的副本。</p></li>
+<li><p><sup>9</sup>&nbsp;表达式<code>a.swap(b)</code>，对于除<code>array</code>外标准容器类型的容器<code>a</code>和<code>b</code>，应在不调用任何单个容器元素的移动、复制或交换操作的情况下，交换<code>a</code>和<code>b</code>的值。任何属于<code>a</code>和<code>b</code>的<code>Compare</code>、<code>Pred</code>或<code>Hash</code>类型的左值应是可交换的，应通过调用描述在<a href="clause20.html#s5.3.2">20.5.3.2</a>中的<code>swap</code>来被交换。如果<code>allocator_traits&lt;allocator_type&gt;::propagate_on_container_swap::value</code>为真，那么<code>allocator_type</code>类型的左值应是可交换的，且<code>a</code>和<code>b</code>的分配器也应通过调用描述在<a href="clause20.html#s5.3.2">20.5.3.2</a>中的<code>swap</code>来被交换。否则，分配器不应被交换，且行为是未定义的，除非<code>a.get_allocator() == b.get_allocator()</code>。每一个在交换前指向一个容器中元素的迭代器都应在交换后指向另一个容器中的同一元素。在交换前，值为<code>a.end()</code>的迭代器是否拥有交换后的值<code>b.end()</code>是不确定的。</p></li>
+<li><p><sup>10</sup>&nbsp;如果容器的迭代器类型属于双向或随机访问迭代器类别（<a href="clause27.html#s2">27.2</a>），则称该容器为<i>可逆</i>的，并满足表<a href="#table84">84</a>中的附加要求。</p></li>
+</ul>
+
+<div>
+<p id="table84" class="table-title">表84——可逆容器要求</p>
+<table>
+<thead><tr>
+<th>表达式</th>
+<th>返回类型</th>
+<th>断言/说明<br>前置/后置条件</th>
+<th>复杂度</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>X::reverse_iterator</code></td>
+<td>值类型为<code>T</code>的迭代器类型</td>
+<td><code>reverse_iterator&lt;iterator&gt;</code></td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>X::const_reverse_iterator</code></td>
+<td>值类型为<code>T</code>的常量迭代器类型</td>
+<td><code>reverse_iterator&lt;const_iterator&gt;</code></td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>a.rbegin()</code></td>
+<td><code>reverse_iterator</code>；对常量<code>a</code>是<code>const_reverse_iterator</code></td>
+<td><code>reverse_iterator(end())</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.rend()</code></td>
+<td><code>reverse_iterator</code>；对常量<code>a</code>是<code>const_reverse_iterator</code></td>
+<td><code>reverse_iterator(end())</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.crbegin()</code></td>
+<td><code>const_reverse_iterator</code></td>
+<td><code>const_cast&lt;X const&amp;&gt;(a).rbegin()</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>a.crend()</code></td>
+<td><code>const_reverse_iterator</code></td>
+<td><code>const_cast&lt;X const&amp;&gt;(a).rend()</code></td>
+<td>常量</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li><p><sup>11</sup>&nbsp;除非另有规定（见<a href="#s2.6.1">26.2.6.1</a>、<a href="#s2.7.1">26.2.7.1</a>、<a href="#s3.8.4">26.3.8.4</a>和<a href="#sc3-11-5">26.3.11.5</a>），本节中定义的所有容器类型满足以下附加要求：
+</p><ul>
+<li><sup>(11.1)</sup>&nbsp;——当插入单个元素时，如果异常被<code>insert()</code>或<code>emplace()</code>函数抛出，此函数无作用。</li>
+<li><sup>(11.2)</sup>&nbsp;——如果异常被<code>push_back()</code>、<code>push_front()</code>、<code>emplace_back()</code>或<code>emplace_front()</code>函数抛出，此函数无作用。</li>
+<li><sup>(11.3)</sup>&nbsp;——<code>erase()</code>、<code>clear()</code>、<code>pop_back()</code>或<code>pop_front()</code>函数不抛出异常。</li>
+<li><sup>(11.4)</sup>&nbsp;——复制构造函数或返回的迭代器的赋值操作符不抛出异常。</li>
+<li><sup>(11.5)</sup>&nbsp;——<code>swap()</code>函数不抛出异常。</li>
+<li><sup>(11.6)</sup>&nbsp;——<code>swap()</code>函数不使指向被交换容器元素的引用、指针或迭代器失效。[<i>注：</i>因为<code>end()</code>迭代器不指向任何元素，所以它可能会失效。<i>——注结束</i>]</li>
+</ul><p></p></li>
+<li><p><sup>12</sup>&nbsp;除非另有规定（明确地或通过其他函数定义一个函数），调用容器成员函数或将容器作为参数传递给库函数，不应使指向容器中对象的迭代器失效或改变容器中对象的值。</p></li>
+<li><p><sup>13</sup>&nbsp;<i>连续容器</i>是支持随机访问迭代器且成员类型<code>iterator</code>和<code>const_iterator</code>为连续迭代器的容器。</p></li>
+<li><p><sup>14</sup>&nbsp;表<a href="#table85">85</a>列出了为某些容器类型而不是其它类型提供的操作。提供所列出操作的容器应实现表<a href="#table85">85</a>中描述的语义，除非另有说明。</p></li>
+</ul>
+
+<div>
+<p id="table85" class="table-title">表85——可选容器操作</p>
+<table>
+<thead><tr>
+<th>表达式</th>
+<th>返回类型</th>
+<th>操作<br>语义</th>
+<th>断言/说明<br>前置/后置条件</th>
+<th>复杂度</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>a &lt; b</code></td>
+<td>可转换为<code>bool</code></td>
+<td><code>lexicographical_compare(a.begin(), a.end(), b.begin(), b.end())</code></td>
+<td><i>要求：</i><code>&lt;</code>被<code>T</code>的值定义。<code>&lt;</code>是一种全序关系。</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a &gt; b</code></td>
+<td>可转换为<code>bool</code></td>
+<td><code>b &lt; a</code></td>
+<td>&nbsp;</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a &lt;= b</code></td>
+<td>可转换为<code>bool</code></td>
+<td><code>!(a &gt; b)</code></td>
+<td>&nbsp;</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a &gt;= b</code></td>
+<td>可转换为<code>bool</code></td>
+<td><code>!(a &lt; b)</code></td>
+<td>&nbsp;</td>
+<td>线性</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li><p>[<i>注：</i>算法<code>lexicographical_compare()</code>在第<a href="clause28.html">28</a>章中定义。<i>——注结束</i>]</p></li>
+<li><p><sup>15</sup> 除<code>array</code>外，本章和<a href="clause24.html#s3.2">24.3.2</a>中定义的容器满足表<a href="#table86">86</a>中描述的分配器可感容器的附加要求。</p>
+<p>给定分配器类型<code>A</code>，给定具有与<code>T</code>相同的<code>value_type</code>和与<code>allocator_traits&lt;A&gt;::rebind_alloc&lt;T&gt;</code>相同的分配器类型的容器类型<code>X</code>，给定<code>A</code>类型的左值<code>m</code>、<code>T*</code>类型的指针<code>p</code>、<code>T</code>（可能为<code>const</code>）类型的表达式<code>v</code>和<code>T</code>类型的右值<code>rv</code>，定义以下术语。如果<code>X</code>不是分配器可感的，下面的术语被定义就像<code>A</code>是<code>allocator&lt;T&gt;</code>一样——无需创建任何分配器对象，且<code>allocator&lt;T&gt;</code>的用户特化不被实例化：
+<ul>
+<li><p><sup>(15.1)</sup>&nbsp;——<code>T</code><i>到<code>X</code>中</i>是<code><i>DefaultInsertable</i></code>，意味着下列表达式是规范的：
+<pre>
+allocator_traits&lt;A&gt;::construct(m, p)
+</pre></p></li>
+<li><p><sup>(15.2)</sup>&nbsp;——如果<code>X</code>的元素被此表达式的赋值初始化，它是<i>默认插入的</i>，
+<pre>
+allocator_traits&lt;A&gt;::construct(m, p)
+</pre>
+其中<code>p</code>为元素分配在<code>X</code>中未初始化的存储地址。</p></li>
+<li><p><sup>(15.3)</sup>&nbsp;——<code>T</code>到<code>X</code>中是<code>MoveInsertable</code>，意味着下列表达式是规范的：
+<pre>
+allocator_traits&lt;A&gt;::construct(m, p, rv)
+</pre>
+且它的赋值导致以下后置条件存在：在赋值前，<code>*p</code>的值等于<code>rv</code>的值。[<i>注：</i><code>rv</code>仍是一个有效对象。它的状态是不确定的。<i>——注结束</i>]</p></li>
+<li><p><sup>(15.4)</sup>&nbsp;——<code>T</code>到<code>X</code>中是<code>CopyInsertable</code>，意味着除<code>T</code>是<code>MoveInsertable</code>到<code>X</code>中外，下列表达式是规范的：
+<pre>
+allocator_traits&lt;A&gt;::construct(m, p, v)
+</pre>
+且它的赋值导致以下后置条件存在：<code>v</code>的值未改变且等于<code>*p</code>。</p></li>
+<li><p><sup>(15.5)</sup>&nbsp;——<code>T</code>从<code>args</code>到<code>X</code>中是<code>EmplaceInsertable</code>，对于零个或更多参数的<code>args</code>，意味着下列表达式是规范的：
+<pre>
+allocator_traits&lt;A&gt;::construct(m, p, args)
+</pre></p></li>
+<li><p><sup>(15.6)</sup>&nbsp;<code>T</code>从<code>X</code>中是<code>Erasable</code>，意味着下列表达式是规范的：
+<pre>
+allocator_traits&lt;A&gt;::destroy(m, p)
+</pre></p></li>
+</ul></p></li>
+<li><p>[<i>注：</i>容器调用<code>allocator_traits&lt;A&gt;::construct(m, p, args)</code>来使用<code>args</code>构造在<code>p</code>位置的元素，其中<code>m == get_allocator()</code>。<code>allocator</code>中的默认<code>construct</code>将调用<code>::new((void*)p) T(args)</code>，但特化的分配器可以选择一个不同的定义。<i>——注结束</i>]</p></li>
+<li><p><sup>16</sup>&nbsp;在表<a href="#table86">86</a>中，<code>X</code>表示一个<code>value_type</code>为<code>T</code>且使用<code>A</code>类型分配器的分配器可感的容器类，<code>u</code>表示一个变量，<code>a</code>和<code>b</code>表示<code>X</code>类型的非常量左值，<code>t</code>表示<code>X</code>类型的一个左值或常量右值，<code>rv</code>表示<code>X</code>类型的一个非常量右值，且<code>m</code>是<code>A</code>类型的值。</p></li>
+</ul>
+
+<div>
+<p id="table86" class="table-title">表86——分配器可感容器要求</p>
+<table>
+<thead><tr>
+<th>表达式</th>
+<th>返回类型</th>
+<th>断言/说明<br/>前置/后置条件</th>
+<th>复杂度</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>allocator_type</code></td>
+<td><code>A</code></td>
+<td><i>要求：</i><code>allocator_type::value_type</code>与<code>X::value_type</code>相同。</td>
+<td>编译时</td>
+</tr>
+<tr>
+<td><code>get_allocator()</code></td>
+<td><code>A</code></td>
+<td>&nbsp;</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>X()<br/>X u;</code></td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>A</code>是<code>DefaultConstructible</code>。<br/><i>后置条件：</i><code>u.empty()</code>返回<code>true</code>，<code>u.get_allocator() == A()</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>X(m)<br/>X u(m);</code></td>
+<td>&nbsp;</td>
+<td><i>后置条件：</i><code>u.empty()</code>返回<code>true</code>，<code>u.get_allocator() == m</code></td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>X(t, m)<br/>X u(t, m);</code></td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中是<code>CopyInsertable</code>。<br/><i>后置条件：</i><code>u == t</code>，<code>u.get_allocator() == m</code></td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>X rv<br/>X u(rv);</code></td>
+<td>&nbsp;</td>
+<td><i>后置条件：</i>在构造前，<code>u</code>应有与<code>rv</code>相同的元素；在构造前，<code>u.get_allocator()</code>的值应与<code>rv.get_allocator()</code>的值相同。</td>
+<td>常量</td>
+</tr>
+<tr>
+<td><code>X(rv, m)<br/>X u(rv, m);</code></td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中是<code>MoveInsertable</code>。<br/><i>后置条件：</i>在构造前，<code>u</code>应与<code>rv</code>有相同的元素或其副本，<code>u.get_allocator() == m</code></td>
+<td>若<code>m == rv.get_allocator()</code>则为常量，否则为线性</td>
+</tr>
+<tr>
+<td><code>a = t</code></td>
+<td><code>X&amp;</code></td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中是<code>CopyInsertable</code>且<code>CopyAssignable</code>。<br/><i>后置条件：</i><code>a == t</code></td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a = rv</code></td>
+<td><code>X&amp;</code></td>
+<td><i>要求：</i>若<code>allocator_traits&lt;allocator_type&gt;::propagate_on_container_move_assignment::value</code>为<code>false</code>，<code>T</code>到<code>X</code>中是<code>MoveInsertable</code>且<code>MoveAssignable</code>。<code>a</code>的所有存在元素被移动赋值或销毁。<br/><i>后置条件：</i>在赋值前，<code>a</code>应等于<code>rv</code>的值</td>
+<td>线性</td>
+</tr>
+<tr>
+<td><code>a.swap(b)</code></td>
+<td><code>void</code></td>
+<td>交换<code>a</code>和<code>b</code>的内容</td>
+<td>常量</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li><p><sup>17</sup>&nbsp;某些容器的成员函数和推导影响行为取决于类型是否规定为输入迭代器或分配器。实现决定一个类型不能为输入迭代器的程度是不确定的，除非最小整数类型不符合输入迭代器的标准。同样地，一个实现决定一个类型不能是一个分配器的程度是不确定的，除非作为一个最小类型<code>A</code>不符合分配器的条件，除非它满足以下两个条件：
+<ul>
+<li><sup>(17.1)</sup>&nbsp;——<i>限定标识符</i><code>A::value_type</code>是有效的并表示一个类型（<a href="clause17.html#s8.2">17.8.2</a>）。</li>
+<li><sup>(17.2)</sup>&nbsp;——当视为一个未赋值的表达式时，表达式<code>declval&lt;A&amp;&gt;().allocate(size_t{})</code>是合法的。</li>
+</ul></p></li></ul>
+
+<h3 id="s2.2">26.2.2 容器数据竞争</h3>
+<ul>
+<li><p><sup>1</sup>&nbsp;为了避免数据竞争（<a href="clause20.html#s5.5.9">20.5.5.9</a>），实现应考虑以下函数为<code>const</code>：<code>begin</code>、<code>end</code>、<code>rbegin</code>、<code>rend</code>、<code>front</code>、<code>back</code>、<code>data</code>、<code>find</code>、<code>lower_bound</code>、<code>upper_bound</code>、<code>equal_range</code>、<code>at</code>，及除了关联或无序关联容器之外的<code>operator[]</code>。</p></li>
+<li><p><sup>2</sup>&nbsp;虽然<a href="clause20.html#s5.5.9">20.5.5.9</a>，但是当同一容器中不同元素中包含的对象的内容同时修改时，实现需要避免数据竞争，<code>vector&lt;bool&gt;</code>除外。</p></li>
+<li><p><sup>3</sup>&nbsp;[<i>注：</i>对于一个有大于一个大小的<code>vector&lt;int&gt; x</code>，<code>x[1] = 5</code>和<code>*x.begin() = 10</code>可以在没有数据竞争的情况下同时执行，但是<code>x[0] = 5</code>和<code>*x.begin() = 10</code>同时执行可能会导致数据竞争。作为一般规则的例外，对于一个<code>vector&lt;bool&gt; y</code>，<code>y[0] = true</code>可以与<code>y[1] = true</code>竞争。<i>——注结束</i>]</p></li>
+</ul>
+
+<h3 id="s2.3">26.2.3 序列容器</h3>
+<ul>
+<li><p><sup>1</sup>&nbsp;序列容器将一个有限集合的对象组织成严格的线性排列。库提供了四种基本的序列容器：<code>vector</code>、<code>forward_list</code>、<code>list</code>和<code>deque</code>。此外，<code>array</code>被提供为一个提供有限序列操作的序列容器，因为它有固定数量的元素。该库还提供容器适配器，使构建抽象数据类型变得容易，例如<code>stack</code>和<code>queue</code>，通过使用基本顺序容器种类（或者通过使用用户可能定义的其他顺序容器）。</p></li>
+<li><p><sup>2</sup>&nbsp;序列容器为程序员提供了不同的复杂性权衡，并应被相应地使用。<code>vector</code>或<code>array</code>是应被默认使用的序列容器类型。当序列中部有频繁插入和删除时，<code>list</code>或<code>forward_list</code>应被使用。当大多数插入和删除发生在序列的开头或结尾时，<code>deque</code>是选择的数据结构。</p></li>
+<li><p><sup>3</sup>&nbsp;在表<a href="#table87">87</a>和<a href="#table88">88</a>中，<code>X</code>表示一个序列容器类；<code>a</code>表示一个包含元素类型<code>T</code>的类型<code>X</code>的一个值；<code>u</code>表示正被声明的变量的名称；如果限定标识符<code>X::allocator_type</code>是有效的且表示一个类型，<code>A</code>表示<code>X::allocator_type</code>，如果不，<code>A</code>表示<code>allocator&lt;T&gt;</code>；<code>i</code>和<code>j</code>表示满足输入迭代器要求的迭代器且指向可隐式转换为<code>value_type</code>的元素；<code>[i, j)</code>表示一个有效的区间；<code>il</code>指定一个类型<code>initializer_list&lt;value_type&gt;</code>的对象；<code>n</code>表示类型<code>X::size_type</code>的一个值；<code>p</code>表示<code>a</code>的一个有效常量迭代器；<code>q</code>表示<code>a</code>的一个有效可解引用常量迭代器；<code>[q1, q2)</code>表示<code>a</code>中常量迭代器的一个有效区间；<code>t</code>表示<code>X::value_type</code>的一个左值或常量右值；<code>rv</code>表示<code>X::value_type</code>的一个非常量右值。<code>Args</code>表示一个模板参数包；<code>args</code>表示一个有<code>Args&amp;&amp;</code>模式的函数参数包。</p></li>
+<li><p><sup>4</sup>&nbsp;表达式的复杂度是与序列相关的。</p></li>
+</ul>
+
+<div>
+<p id="table87" class="table-title">表87——序列容器要求（额外容器）</p>
+<table>
+<thead><tr>
+<th>表达式</th>
+<th>返回类型</th>
+<th>断言/说明<br/>前置/后置条件</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>X(n, t)<br/>X u(n, t);</code></td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中应<code>CopyInsertable</code>。<br/><i>后置条件：</i><code>distance(begin(), end()) == n</code><br/>用<code>t</code>的<code>n</code>份副本构造一个序列容器</td>
+</tr>
+<tr>
+<td><code>X(i, j)<br/>X u(i, j);</code></td>
+<td>&nbsp;</td>
+<td><i>要求：</i><code>T</code>从<code>*i</code>到<code>X</code>中应<code>EmplaceConstructible</code>。对于<code>vector</code>，如果迭代器不满足前向迭代器要求（<a href="clause27.html#sc2-5">27.2.5</a>），<code>T</code>到<code>X</code>中也应<code>MoveInsertable</code>。在区间<code>[i, j)</code>中的每个迭代器应恰好被解引用一次。<br/><i>后置条件：</i><code>distance(begin(), end()) == distance(i, j)</code><br/>构造一个与区间<code>[i, j)</code>相等的序列容器</td>
+</tr>
+<tr>
+<td><code>X(il)</code></td>
+<td>&nbsp;</td>
+<td>相当于<code>X(il.begin(), il.end())</code></td>
+</tr>
+<tr>
+<td><code>a = il</code></td>
+<td><code>X&amp;</code></td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中<code>CopyInsertable</code>且<code>CopyAssignable</code>。将区间<code>[il.begin(), il.end())</code>赋值给<code>a</code>。<code>a</code>的所有存在元素被赋值或销毁。<br/><i>返回：</i><code>*this</code>。</td>
+</tr>
+<tr>
+<td><code>a.emplace(p, args)</code></td>
+<td><code>iterator</code></td>
+<td><i>要求：</i><code>T</code>从<code>args</code>到<code>X</code>中<code>EmplaceConstructible</code>。对于<code>vector</code>和<code>deque</code>，<code>T</code>到<code>X</code>中也<code>MoveInsertable</code>且<code>MoveAssignable</code>。<br/><i>效果：</i>在<code>p</code>前插入一个用<code>std::forward&lt;Args&gt;(args)...</code>构造的<code>T</code>类型对象。</td>
+</tr>
+<tr>
+<td><code>a.insert(p, t)</code></td>
+<td><code>iterator</code></td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中应<code>CopyInsertable</code>。对于<code>vector</code>和<code>deque</code>，<code>T</code>也应<code>CopyAssignable</code>。<br/><i>效果：</i>在<code>p</code>前插入一份<code>t</code>的副本。</td>
+</tr>
+<tr>
+<td><code>a.insert(p, rv)</code></td>
+<td><code>iterator</code></td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中应<code>MoveInsertable</code>。对于<code>vector</code>和<code>deque</code>，<code>T</code>也应<code>MoveAssignable</code>。<br/><i>效果：</i>在<code>p</code>前插入一份<code>rv</code>的副本。</td>
+</tr>
+<tr>
+<td><code>a.insert(p, n, t)</code></td>
+<td><code>iterator</code></td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中应<code>CopyInsertable</code>且<code>CopyAssignable</code>。<br/>在<code>p</code>前插入<code>t</code>的<code>n</code>份副本</td>
+</tr>
+<tr>
+<td><code>a.insert(p, i, j)</code></td>
+<td><code>iterator</code></td>
+<td><i>要求：</i><code>T</code>从<code>*i</code>到<code>X</code>中应<code>EmplaceConstructible</code>。对于<code>vector</code>和<code>deque</code>，<code>T</code>到<code>X</code>中也应<code>MoveConstructible</code>、<code>MoveAssignable</code>且可交换（<a href="clause20#sc-5-3-2">20.5.3.2</a>）。在区间<code>[i, j)</code>中的每个迭代器应恰好被解引用一次。<br/><i>要求：</i><code>i</code>和<code>j</code>不是<code>a</code>中的迭代器。<br/>在<code>p</code>前插入<code>[i, j)</code>中元素的副本</td>
+</tr>
+<tr>
+<td><code>a.insert(p, il)</code></td>
+<td><code>iterator</code></td>
+<td><code>a.insert(p, il.begin(), il.end())</code>。</td>
+</tr>
+<tr>
+<td><code>a.erase(q)</code></td>
+<td><code>iterator</code></td>
+<td><code>要求：</code>对于<code>vector</code>和<code>deque</code>，<code>T</code>应<code>MoveAssignable</code>。<br/><i>效果：</i>删除<code>q</code>指向的元素。</td>
+</tr>
+<tr>
+<td><code>a.erase(q1, q2)</code></td>
+<td><code>iterator</code></td>
+<td><i>要求：</i>对于<code>vector</code>和<code>deque</code>，<code>T</code>应<code>MoveAssignable</code>。<br/><i>效果：</i>删除区间<code>[q1, q2)</code>中的元素。</td>
+</tr>
+<tr>
+<td><code>a.clear()</code></td>
+<td><code>void</code></td>
+<td>销毁<code>a</code>中的所有元素。使指向<code>a</code>的元素的所有引用、指针和迭代器失效，且可能使逾尾迭代器失效。<br/><i>后置条件：</i><code>a.empty()</code>返回<code>true</code>。<br/><i>复杂度：</i>线性。</td>
+</tr>
+<tr>
+<td><code>a.assign(i, j)</code></td>
+<td><code>void</code></td>
+<td><i>要求：</i><code>T</code>从<code>*i</code>到<code>X</code>中应<code>EmplaceConstructible</code>。对于<code>vector</code>，如果迭代器不满足前向迭代器要求（<a href="clause27.html#sc2-5">27.2.5</a>），<code>T</code>到<code>X</code>中也应<code>MoveInsertable</code>。在区间<code>[i, j)</code>中的每个迭代器应恰好被解引用一次。<br/><i>要求：</i><code>i</code>和<code>j</code>不是<code>a</code>中的迭代器。<br/>用<code>[i, j)</code>的一份副本替换<code>a</code>中元素。使指向<code>a</code>的元素的所有引用、指针和迭代器失效。对于<code>vector</code>和<code>deque</code>，也使逾尾迭代器失效。</td>
+</tr>
+<tr>
+<td><code>a.assign(il)</code></td>
+<td><code>void</code></td>
+<td><code>a.assign(il.begin(), il.end())</code>。</td>
+</tr>
+<tr>
+<td><code>a.assign(n, t)</code></td>
+<td><code>void</code></td>
+<td><i>要求：</i><code>T</code>到<code>X</code>中应<code>CopyInsertable</code>且<code>CopyAssignable</code>。<br/><i>要求：</i><code>T</code>不是<code>a</code>中的引用。<br/>用<code>t</code>的<code>n</code>份副本替换<code>a</code>中元素。对于<code>vector</code>和<code>deque</code>，也使逾尾迭代器失效。</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li><p><sup>5</sup>&nbsp;<code>a.insert(p, t)</code>返回的迭代器指向插入到<code>a</code>中的<code>t</code>的副本。</p></li>
+<li><p><sup>6</sup>&nbsp;<code>a.insert(p, rv)</code>返回的迭代器指向插入到<code>a</code>中的<code>rv</code>的副本。</p></li>
+<li><p><sup>7</sup>&nbsp;<code>a.insert(p, n, t)</code>返回的迭代器指向插入到<code>a</code>中的第一个元素的副本；或如果<code>n == 0</code>，则为<code>p</code>。</p></li>
+<li><p><sup>8</sup>&nbsp;<code>a.insert(p, i, j)</code>返回的迭代器指向插入到<code>a</code>中的第一个元素的副本；或如果<code>i == j</code>，则为<code>p</code>。</p></li>
+<li><p><sup>9</sup>&nbsp;<code>a.insert(p, il)</code>返回的迭代器指向插入到<code>a</code>中的第一个元素的副本；或如果<code>il</code>为空，则为<code>p</code>。</p></li>
+<li><p><sup>10</sup>&nbsp;<code>a.emplace(p, args)</code>返回的迭代器指向从<code>args</code>到<code>a</code>中构造的新元素。</p></li>
+<li><p><sup>11</sup>&nbsp;<code>a.erase(q)</code>返回的迭代器指向在元素被删除之前紧跟在<code>q</code>后面的元素。如果不存在这样的元素，则返回<code>a.end()</code>。</p></li>
+<li><p><sup>12</sup>&nbsp;<code>a.erase(q1, q2)</code>返回的迭代器指向在任何元素被删除之前<code>q2</code>指向的元素。如果不存在这样的元素，则返回<code>a.end()</code>。</p></li>
+<li><p><sup>13</sup>&nbsp;对于每一个在本章和第<a href="clause24.html">24</a>章中定义的序列容器：
+<ul>
+<li><p><sup>(13.1)</sup>&nbsp;如果构造函数
+<pre>
+template &lt;class InputIterator&gt;
+  X(InputIterator first, InputIterator last,
+    const allocator_type&amp; alloc = allocator_type());
+</pre>
+被用一个不符合输入迭代器的要求的<code>InputIterator</code>类型调用，那么构造函数将不参与重载解决方案。
+</p>
+</li>
+<li><p><sup>(13.2)</sup>&nbsp;如果有下列形式的成员函数：
+<pre>
+template &lt;class InputIterator&gt;
+  返回类型 F(const_iterator p,
+             InputIterator first, InputIterator last); // 例如insert
+
+template &lt;class InputIterator&gt;
+  返回类型 F(InputIterator first, InputIterator last); // 例如append、assign
+
+template &lt;class InputIterator&gt;
+  返回类型 F(const_iterator i1, const_iterator i2,
+             InputIterator first, InputIterator last); // 例如replace
+</pre>
+被用一个不符合输入迭代器的要求的<code>InputIterator</code>类型调用，那么这些函数将不参与重载解决方案。
+</p></li>
+<li><p><sup>(13.3)</sup>&nbsp;序列容器的推导器将不参与重载解决方案，如果它有一个<code>InputIterator</code>模板参数和为参数推导出的一个不符合输入迭代器的要求的类型，或它有一个<code>Allocator</code>模板参数和为参数推导出的一个不符合分配器的要求的类型。
+</p></li>
+</ul></p></li>
+<li><p><sup>14</sup>&nbsp;表<a href="#table88">88</a>列出了为某些类型的序列容器而不是其他类型提供的操作。实现应为“容器”列中所示的所有容器类型提供这些操作，并应以均摊的常量时间执行这些操作。</p></li>
+</ul>
+
+<div>
+<p id="table88" class="table-title">表88——可选序列容器操作</p>
+<table>
+<thead><tr>
+<th>表达式</th>
+<th>返回类型</th>
+<th>操作语义</th>
+<th>容器</th>
+</tr></thead>
+<tbody>
+</tbody>
+<tr>
+<td><code>a.front()</code></td>
+<td><code>reference</code>；对常量<code>a</code>是<code>const_reference</code></td>
+<td><code>*a.begin()</code></td>
+<td><code>basic_string</code>、<code>array</code>、<code>deque</code>、<code>forward_list</code>、<code>list</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a.back()</code></td>
+<td><code>reference</code>；对常量<code>a</code>是<code>const_reference</code></td>
+<td><pre>
+{ auto tmp = a.end();
+--tmp;
+return *tmp; }
+</pre></td>
+<td><code>basic_string</code>、<code>array</code>、<code>deque</code>、<code>list</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a.emplace_front(args)</code></td>
+<td><code>reference</code></td>
+<td>在前端加入用<code>std::forward&lt;Args&gt;(args)...</code>构造的<code>T</code>类型对象。<br/><i>要求：</i><code>T</code>从<code>args</code>到<code>X</code>中应<code>EmplaceConstructible</code>。<br/><i>返回：</i><code>a.front()</code>。</td>
+<td><code>deque</code>、<code>forward_list</code>、<code>list</code></td>
+</tr>
+<tr>
+<td><code>a.emplace_back(args)</code></td>
+<td><code>reference</code></td>
+<td>在后端加入用<code>std::forward&lt;Args&gt;(args)...</code>构造的<code>T</code>类型对象。<br/><i>要求：</i><code>T</code>从<code>args</code>到<code>X</code>中应<code>EmplaceConstructible</code>。对于<code>vector</code>，<code>T</code>到<code>X</code>中也应<code>MoveInsertable</code>。<br/><i>返回：</i><code>a.back()</code>。</td>
+<td><code>deque</code>、<code>list</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a.push_front(t)</code></td>
+<td><code>void</code></td>
+<td>在前端加入<code>t</code>的一份副本。<br/><i>要求：</i><code>T</code>到<code>X</code>中应<code>CopyInsertable</code>。</td>
+<td><code>deque</code>、<code>forward_list</code>、<code>list</code></td>
+</tr>
+<tr>
+<td><code>a.push_front(rv)</code></td>
+<td><code>void</code></td>
+<td>在前端加入<code>rv</code>的一份副本。<br/><i>要求：</i><code>T</code>到<code>X</code>中应<code>MoveInsertable</code>。</td>
+<td><code>deque</code>、<code>forward_list</code>、<code>list</code></td>
+</tr>
+<tr>
+<td><code>a.push_back(t)</code></td>
+<td><code>void</code></td>
+<td>在后端加入<code>t</code>的一份副本。<br/><i>要求：</i><code>T</code>到<code>X</code>中应<code>CopyInsertable</code>。</td>
+<td><code>basic_string</code>、<code>deque</code>、<code>list</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a.push_back(rv)</code></td>
+<td><code>void</code></td>
+<td>在后端加入<code>rv</code>的一份副本。<br/><i>要求：</i><code>T</code>到<code>X</code>中应<code>MoveInsertable</code>。</td>
+<td><code>basic_string</code>、<code>deque</code>、<code>list</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a.pop_front()</code></td>
+<td><code>void</code></td>
+<td>销毁首元素。<br/><i>要求：</i><code>a.empty()</code>应为<code>false</code>。</td>
+<td><code>deque</code>、<code>forward_list</code>、<code>list</code></td>
+</tr>
+<tr>
+<td><code>a.pop_back()</code></td>
+<td><code>void</code></td>
+<td>销毁末元素。<br/><i>要求：</i><code>a.empty()</code>应为<code>false</code>。</td>
+<td><code>basic_string</code>、<code>deque</code>、<code>list</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a[n]</code></td>
+<td><code>reference</code>；对常量<code>a</code>是<code>const_reference</code></td>
+<td><code>*(a.begin() + n)</code></td>
+<td><code>basic_string</code>、<code>array</code>、<code>deque</code>、<code>vector</code></td>
+</tr>
+<tr>
+<td><code>a.at(n)</code></td>
+<td><code>reference</code>；对常量<code>a</code>是<code>const_reference</code></td>
+<td><code>*(a.begin() + n)</code></td>
+<td><code>basic_string</code>、<code>array</code>、<code>deque</code>、<code>vector</code></td>
+</tr>
+</table>
+</div>
+
+<ul>
+<li><p><sup>15</sup>&nbsp;成员函数<code>at()</code>提供对容器元素的边界检查访问。若<code>n &gt;= a.size()</code>，<code>at()</code>抛出<code>out_of_range</code>。</p></li>
+</ul>
+
+</body>
+</html>
