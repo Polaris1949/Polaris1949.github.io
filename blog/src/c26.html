@@ -13,7 +13,7 @@
 
 
 
-
+      
 
 
 
@@ -958,9 +958,9 @@ i <span class="token operator">-</span> j
 <ul>
 <li><sup>15</sup> 成员函数<code>at()</code>提供对容器元素的边界检查访问。若<code>n &gt;= a.size()</code>，<code>at()</code>抛出<code>out_of_range</code>。</li>
 </ul>
-<h3 class="mume-header" id="2624-%E8%8A%82%E7%82%B9%E5%8F%A5%E6%9F%84">26.2.4 节点句柄</h3>
+<h3 class="mume-header undefined" id="s2.4">26.2.4 节点句柄</h3>
 
-<h4 class="mume-header" id="26241-node_handle%E6%A6%82%E8%A7%88">26.2.4.1 <code>node_handle</code>概览</h4>
+<h4 class="mume-header undefined" id="s2.4.1">26.2.4.1 <code>node_handle</code>概览</h4>
 
 <ul>
 <li><sup>1</sup> 一个<em>节点句柄</em>是一个接受来自关联容器（<a href="#s2.6">26.2.6</a>）或无序关联容器（<a href="#s2.7">26.2.7</a>）的单个元素的所有权的对象。它可以用来将所有权转移到具有兼容节点的另一个容器中。具有兼容节点的容器具有相同的节点句柄类型。元素可以在表<a href="#t89">89</a>的同一行中的容器类型之间在任一方向上传送。</li>
@@ -1052,7 +1052,7 @@ i <span class="token operator">-</span> j
 			x<span class="token punctuation">.</span><span class="token function">swap</span><span class="token punctuation">(</span>y<span class="token punctuation">)</span><span class="token punctuation">;</span>
 		<span class="token punctuation">}</span>
 	<span class="token punctuation">}</span><span class="token punctuation">;</span>
-</pre><h4 class="mume-header" id="26242-node_handle-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-%E5%A4%8D%E5%88%B6%E5%92%8C%E8%B5%8B%E5%80%BC">26.2.4.2 <em><code>node_handle</code></em> 构造函数、复制和赋值</h4>
+</pre><h4 class="mume-header undefined" id="s2.4.2">26.2.4.2 <em><code>node_handle</code></em> 构造函数、复制和赋值</h4>
 
 <pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token function">node_handle</span><span class="token punctuation">(</span>node_handle<span class="token operator">&amp;&amp;</span> nh<span class="token punctuation">)</span> <span class="token keyword">noexcept</span><span class="token punctuation">;</span>
 </pre><ul>
@@ -1080,13 +1080,13 @@ i <span class="token operator">-</span> j
 <li><sup>4</sup> <em>返回：</em><code>*this</code>。</li>
 <li><sup>5</sup> <em>抛出：</em> 无。</li>
 </ul>
-<h4 class="mume-header" id="26243-node_handle-%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0">26.2.4.3 <em><code>node_handle</code></em> 析构函数</h4>
+<h4 class="mume-header undefined" id="s2.4.3">26.2.4.3 <em><code>node_handle</code></em> 析构函数</h4>
 
 <pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token operator">~</span><span class="token function">node_handle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </pre><ul>
 <li><sup>1</sup> <em>效果：</em> 如果<code>ptr_ != nullptr</code>，通过调用<code>ator_traits::destroy</code>销毁<code>ptr_</code>指向的<code>container_node_type</code>对象中的<code>value_type</code>子对象，然后通过调用<code>ator_traits::rebind_traits&lt;container_node_type&gt;::deallocate</code>释放<code>ptr_</code>。</li>
 </ul>
-<h4 class="mume-header" id="26244-node_handle-%E8%A7%82%E5%AF%9F%E5%99%A8">26.2.4.4 <em><code>node_handle</code></em> 观察器</h4>
+<h4 class="mume-header undefined" id="s2.4.4">26.2.4.4 <em><code>node_handle</code></em> 观察器</h4>
 
 <pre data-role="codeBlock" data-info="cpp" class="language-cpp">value_type<span class="token operator">&amp;</span> <span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span><span class="token punctuation">;</span>
 </pre><ul>
@@ -1121,7 +1121,7 @@ i <span class="token operator">-</span> j
 </pre><ul>
 <li><sup>15</sup> <em>返回：</em><code>ptr_ == nullptr</code>。</li>
 </ul>
-<h4 class="mume-header" id="26245-node_handle-%E4%BF%AE%E6%94%B9%E5%99%A8">26.2.4.5 <em><code>node_handle</code></em> 修改器</h4>
+<h4 class="mume-header undefined" id="s2.4.5">26.2.4.5 <em><code>node_handle</code></em> 修改器</h4>
 
 <pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword">void</span> <span class="token function">swap</span><span class="token punctuation">(</span>node_handle<span class="token operator">&amp;</span> nh<span class="token punctuation">)</span>
   <span class="token keyword">noexcept</span><span class="token punctuation">(</span>ator_traits<span class="token operator">::</span>propagate_on_container_swap<span class="token operator">::</span>value <span class="token operator">||</span>
@@ -1130,7 +1130,7 @@ i <span class="token operator">-</span> j
 <li><sup>1</sup> <em>要求：</em><code>!alloc_</code>，或<code>!nh.alloc_</code>，或<code>ator_traits::propagate_on_container_swap</code>为<code>true</code>，或<code>alloc_ == nh.alloc_</code>。</li>
 <li><sup>2</sup> <em>效果：</em> 调用<code>swap(ptr_, nh.ptr_)</code>。如果<code>!alloc_</code>，或<code>!nh.alloc_</code>，或<code>ator_traits::propagate_on_container_swap</code>为<code>true</code>，调用<code>swap(alloc_, nh.alloc_)</code>。</li>
 </ul>
-<h3 class="mume-header" id="2625-%E6%8F%92%E5%85%A5%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B">26.2.5 插入返回类型</h3>
+<h3 class="mume-header undefined" id="s2.5">26.2.5 插入返回类型</h3>
 
 <ul>
 <li><sup>1</sup> 具有唯一键的关联容器和具有唯一键的无序容器具有一个成员函数<code>insert</code>，它返回嵌套类型<code>insert_return_type</code>。此返回类型是本节中指定的类型的特化。</li>
@@ -1145,7 +1145,7 @@ i <span class="token operator">-</span> j
 </pre><ul>
 <li><sup>2</sup> 名称<code>INSERT_RETURN_TYPE</code>仅用作说明。<code>INSERT_RETURN_TYPE</code>具有上面指定的模板参数、数据成员和特殊成员。它没有指定的基类或成员。</li>
 </ul>
-<h3 class="mume-header" id="2626-%E5%85%B3%E8%81%94%E5%AE%B9%E5%99%A8">26.2.6 关联容器</h3>
+<h3 class="mume-header undefined" id="s2.6">26.2.6 关联容器</h3>
 
 <ul>
 <li><sup>1</sup> 关联容器提供基于键的数据快速检索。库中提供了四种基本的关联容器：<code>set</code>、<code>multiset</code>、<code>map</code>和<code>multimap</code>。</li>
@@ -1268,7 +1268,7 @@ i <span class="token operator">-</span> j
 <tr>
 <td><code>a_uniq.emplace(args)</code></td>
 <td><code>pair&lt;iterator, bool&gt;</code></td>
-<td><em>要求：</em><code>value_type</code>从<code>args</code>到<code>a</code>中应是<code>EmplaceConstructible</code>。<br><em>效果：</em> 插入由<code>std::forward&lt;Args&gt;(args)...</code>构造的<code>value_type</code>对象<code>t</code>，如果且仅如果容器中没有元素有和<code>t</code>键等价的键。返回的双对的<code>bool</code>成员是<code>true</code>，如果且仅如果本次插入发生；且双对的<code>iterator</code>成员指向有和<code>t</code>键等价的键的元素。</td>
+<td><em>要求：</em><code>value_type</code>从<code>args</code>到<code>a</code>中应是<code>EmplaceConstructible</code>。<br><em>效果：</em> 插入由<code>std::forward&lt;Args&gt;(args)...</code>构造的<code>value_type</code>对象<code>t</code>，如果且仅如果容器中没有元素有和<code>t</code>键等价的键。返回的元对的<code>bool</code>成员是<code>true</code>，如果且仅如果本次插入发生；且元对的<code>iterator</code>成员指向有和<code>t</code>键等价的键的元素。</td>
 <td>对数</td>
 </tr>
 <tr>
@@ -1277,8 +1277,207 @@ i <span class="token operator">-</span> j
 <td><em>要求：</em><code>value_type</code>从<code>args</code>到<code>a</code>中应是<code>EmplaceConstructible</code>。<br><em>效果：</em> 插入由<code>std::forward&lt;Args&gt;(args)...</code>构造的<code>value_type</code>对象<code>t</code>，返回指向新插入元素的迭代器。如果一个区间包含和<code>t</code>等价的元素存在于<code>a_eq</code>中，<code>t</code>被插入到那个区间的末尾。</td>
 <td>对数</td>
 </tr>
+<tr>
+<td><code>a.emplace_hint(p, args)</code></td>
+<td><code>iterator</code></td>
+<td>等价于<code>a.emplace(std::forward&lt;Args&gt;(args)...)</code>。返回值是一个指向有和新插入元素等价键的元素的迭代器。该元素尽可能地插入到<code>p</code>之前的位置。</td>
+<td>通常为对数，但如果元素在<code>p</code>前插入，则为均摊常量</td>
+</tr>
+<tr>
+<td><code>a_uniq.insert(t)</code></td>
+<td><code>pair&lt;iterator, bool&gt;</code></td>
+<td><em>要求：</em> 如果<code>t</code>是一个非常量右值表达式，<code>value_type</code>到<code>X</code>中应<code>MoveInsertable</code>；否则，<code>value_type</code>到<code>X</code>中应<code>CopyInsertable</code>。<br><em>效果：</em> 插入<code>t</code>，如果且仅如果容器中没有元素有和<code>t</code>的键相等的等价键。返回的元对的<code>bool</code>成员是<code>true</code>，如果且仅如果本次插入发生；且元对的<code>iterator</code>成员指向有和<code>t</code>键等价的键的元素。</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a_eq.insert(t)</code></td>
+<td><code>iterator</code></td>
+<td><em>要求：</em> 如果<code>t</code>是一个非常量右值表达式，<code>value_type</code>到<code>X</code>中应<code>MoveInsertable</code>；否则，<code>value_type</code>到<code>X</code>中应<code>CopyInsertable</code>。<br><em>效果：</em> 插入<code>t</code>，返回指向新插入元素的迭代器。如果一个区间包含和<code>t</code>等价的元素存在于<code>a_eq</code>中，<code>t</code>被插入到那个区间的末尾。</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a.insert(p, t)</code></td>
+<td><code>iterator</code></td>
+<td><em>要求：</em> 如果<code>t</code>是一个非常量右值表达式，<code>value_type</code>到<code>X</code>中应<code>MoveInsertable</code>；否则，<code>value_type</code>到<code>X</code>中应<code>CopyInsertable</code>。<br><em>效果：</em> 插入<code>t</code>，如果且仅如果在唯一键容器中没有和<code>t</code>的键等价键的元素；总在等价键容器中插入<code>t</code>。总返回指向和<code>t</code>的键有等价键的新插入元素的迭代器。<code>t</code>的插入尽可能接近<code>p</code>之前的位置。</td>
+<td>通常为对数，但如果元素在<code>p</code>前插入，则为均摊常量</td>
+</tr>
+<tr>
+<td><code>a.insert(i, j)</code></td>
+<td><code>void</code></td>
+<td><em>要求：</em><code>value_type</code>从<code>*i</code>到<code>X</code>中应<code>EmplaceConstructible</code>。<br><em>要求：</em><code>i</code>、<code>j</code>不是<code>a</code>中的迭代器。插入区间<code>[i, j)</code>中的每一个元素，如果且仅如果在唯一键容器中和<code>t</code>的键没有等价键的元素；总在等价键容器中插入元素。</td>
+<td><em>N</em> log(<code>a.size()</code> + <em>N</em>)，其中<em>N</em>有值<code>distance(i, j)</code></td>
+</tr>
+<tr>
+<td><code>a.insert(il)</code></td>
+<td><code>void</code></td>
+<td>等价于<code>a.insert(il.begin(), il.end())</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>a_uniq.insert(nh)</code></td>
+<td><code>insert_return_type</code></td>
+<td><em>要求：</em><code>nh</code>为空或<code>a_uniq.get_allocator() == nh.get_allocator()</code>。<br><em>效果：</em> 如果<code>nh</code>为空，没有效果。否则，插入<code>nh</code>拥有的元素，如果且仅如果容器中没有和<code>nh.key()</code>等价的键。<br><em>后置条件：</em> 如果<code>nh</code>为空，则<code>inserted</code>为<code>false</code>，<code>position</code>为<code>end()</code>，<code>node</code>为空。否则如果插入发生，<code>inserted</code>为<code>true</code>，<code>position</code>指向插入的元素，<code>node</code>为空；如果插入失败，<code>inserted</code>为<code>false</code>，<code>node</code>有<code>nh</code>先前的值，<code>position</code>指向有和<code>nh.key()</code>等价键的元素。</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a_eq.insert(nh)</code></td>
+<td><code>iterator</code></td>
+<td><em>要求：</em><code>nh</code>为空或<code>a_uniq.get_allocator() == nh.get_allocator()</code>。<br><em>效果：</em> 如果<code>nh</code>为空，没有效果且返回<code>a_eq.end()</code>。否则，插入<code>nh</code>拥有的元素，返回指向新插入元素的迭代器。如果一个区间包含和<code>nh.key()</code>等价键的元素出现在<code>a_eq</code>中，元素插入到区间的末尾。<br><em>后置条件：</em><code>nh</code>为空。</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a.insert(p, nh)</code></td>
+<td><code>iterator</code></td>
+<td><em>要求：</em><code>nh</code>为空或<code>a_uniq.get_allocator() == nh.get_allocator()</code>。<br><em>效果：</em> 如果<code>nh</code>为空，没有效果且返回<code>a_eq.end()</code>。否则，插入<code>nh</code>拥有的元素，如果且仅如果在唯一键容器中没有和<code>nh.key()</code>等价键的元素；在等价键容器中总插入<code>nh</code>拥有的元素。总返回指向有和<code>nh.key()</code>等价键的元素的迭代器。元素的插入尽可能接近<code>p</code>之前的位置。<br><em>后置条件：</em> 如果插入成功，<code>nh</code>为空；如果插入失败，不变。</td>
+<td>通常为对数，但如果元素在<code>p</code>前插入，则为均摊常量</td>
+</tr>
+<tr>
+<td><code>a.extract(k)</code></td>
+<td><code>node_type</code></td>
+<td>删除容器中和<code>k</code>有等价键的首元素。如果找到，返回拥有元素的<code>node_type</code>；否则为空的<code>node_type</code>。</td>
+<td>log(<code>a.size()</code>)</td>
+</tr>
+<tr>
+<td><code>a.extract(q)</code></td>
+<td><code>node_type</code></td>
+<td>删除<code>q</code>指向的元素。返回拥有此元素的<code>node_type</code>。</td>
+<td>均摊常量</td>
+</tr>
+<tr>
+<td><code>a.merge(a2)</code></td>
+<td><code>void</code></td>
+<td><em>要求：</em><code>a.get_allocator() == a2.get_allocator()</code>。<br>尝试在<code>a2</code>中提取每个元素，并使用<code>a</code>的比较对象将其插入到<code>a</code>中。在唯一键容器中，如果<code>a</code>有元素和<code>a2</code>的元素有等价键，则此元素不从<code>a2</code>中提取。<br><em>后置条件：</em> 指向<code>a2</code>的传递元素的指针和引用指向那些相同的元素，但作为<code>a</code>的成员。引用传递元素的迭代器将继续引用它们的元素，但它们现在作为<code>a</code>中的迭代器，而不是<code>a2</code>中的。<br><em>抛出：</em> 无，除非比较对象抛出。</td>
+<td><em>N</em> log(<code>a.size()</code>+<em>N</em>)，其中<em>N</em>有值<code>a2.size()</code>。</td>
+</tr>
+<tr>
+<td><code>a.erase(k)</code></td>
+<td><code>size_type</code></td>
+<td>删除容器中和<code>k</code>有等价键的所有元素。返回删除元素个数。</td>
+<td>log(<code>a.size()</code>) + <code>a.count(k)</code></td>
+</tr>
+<tr>
+<td><code>a.erase(q)</code></td>
+<td><code>iterator</code></td>
+<td>删除<code>q</code>指向的元素。返回一个迭代器，指向元素在被擦除之前紧跟<code>q</code>之后的元素。如果没有这种元素存在，返回<code>a.end()</code>。</td>
+<td>均摊常量</td>
+</tr>
+<tr>
+<td><code>a.erase(r)</code></td>
+<td><code>iterator</code></td>
+<td>删除<code>r</code>指向的元素。返回一个迭代器，指向元素在被擦除之前紧跟<code>r</code>之后的元素。如果没有这种元素存在，返回<code>a.end()</code>。</td>
+<td>均摊常量</td>
+</tr>
+<tr>
+<td><code>a.erase(q1, q2)</code></td>
+<td><code>iterator</code></td>
+<td>删除区间<code>[q1, q2)</code>中的所有元素。返回一个迭代器，指向在任何元素被删除之前由<code>q2</code>指向的元素。如果没有这种元素存在，返回<code>a.end()</code>。</td>
+<td>log(<code>a.size()</code>) + <em>N</em>，其中<em>N</em>有值<code>distance(q1, q2)</code></td>
+</tr>
+<tr>
+<td><code>a.clear()</code></td>
+<td><code>void</code></td>
+<td><code>a.erase(a.begin(),a.end())</code><br><em>后置条件：</em><code>a.empty()</code>返回<code>true</code>。</td>
+<td>线性<code>a.size()</code></td>
+</tr>
+<tr>
+<td><code>b.find(k)</code></td>
+<td><code>iterator</code>；对于常量<code>b</code>是<code>const_iterator</code></td>
+<td>返回指向和<code>k</code>有等价键的元素的迭代器；或<code>b.end()</code>，如果元素未找到</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a_tran.find(ke)</code></td>
+<td><code>iterator</code>；对于常量<code>a_tran</code>是<code>const_iterator</code></td>
+<td>返回指向有键<code>r</code>的元素的迭代器，其中<code>!c(r, ke) &amp;&amp; !c(ke, r)</code>；或<code>a_tran.end()</code>，如果元素未找到</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>b.count(k)</code></td>
+<td><code>size_type</code></td>
+<td>返回和<code>k</code>有等价键的元素个数</td>
+<td>log(<code>b.size()</code>) + <code>b.count(k)</code></td>
+</tr>
+<tr>
+<td><code>a_tran.count(ke)</code></td>
+<td><code>size_type</code></td>
+<td>返回有键<code>r</code>的元素个数，其中<code>!c(r, ke) &amp;&amp; !c(ke, r)</code></td>
+<td>log(<code>a_tran.size()</code>) + <code>a_tran.count(ke)</code></td>
+</tr>
+<tr>
+<td><code>b.lower_bound(k)</code></td>
+<td><code>iterator</code>；对于常量<code>b</code>是<code>const_iterator</code></td>
+<td>返回第一个指向元素键不小于<code>k</code>的迭代器；或<code>b.end()</code>，如果元素未找到</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a_tran.lower_bound(kl)</code></td>
+<td><code>iterator</code>；对于常量<code>a_tran</code>是<code>const_iterator</code></td>
+<td>返回第一个指向元素键为<code>r</code>的迭代器，其中<code>!c(r, kl)</code>；或<code>a_tran.end()</code>，如果元素未找到</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>b.upper_bound(k)</code></td>
+<td><code>iterator</code>；对于常量<code>b</code>是<code>const_iterator</code></td>
+<td>返回第一个指向元素键大于<code>k</code>的迭代器；或<code>b.end()</code>，如果元素未找到</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a_tran.upper_bound(kl)</code></td>
+<td><code>iterator</code>；对于常量<code>a_tran</code>是<code>const_iterator</code></td>
+<td>返回第一个指向元素键为<code>r</code>的迭代器，其中<code>c(r, kl)</code>；或<code>a_tran.end()</code>，如果元素未找到</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>b.equal_range(k)</code></td>
+<td><code>pair&lt;iterator, iterator&gt;</code>；对于常量<code>b</code>是<code>pair&lt;const_iterator, const_iterator&gt;</code></td>
+<td>等价于<code>make_pair(b.lower_bound(k), b.upper_bound(k))</code>。</td>
+<td>对数</td>
+</tr>
+<tr>
+<td><code>a_tran.equal_range(ke)</code></td>
+<td><code>pair&lt;iterator, iterator&gt;</code>；对于常量<code>a_tran</code>是<code>pair&lt;const_iterator, const_iterator&gt;</code></td>
+<td>等价于<code>make_pair(a_tran.lower_bound(ke), a_tran.upper_bound(ke))</code>。</td>
+<td>对数</td>
+</tr>
 </tbody>
 </table>
+<ul>
+<li><sup>9</sup> <code>insert</code>和<code>emplace</code>成员不应影响容器的迭代器和引用的有效性，<code>erase</code>成员应仅使被擦除的元素的迭代器和引用失效。</li>
+<li><sup>10</sup> <code>extract</code>成员仅使被删除元素的迭代器失效；被移除元素的指针和引用保持有效。然而，当元素由<code>node_type</code>所拥有时，通过此类指针和引用访问元素是未定义行为。如果元素成功插入，<code>node_type</code>拥有的获取元素的引用和指针失效。</li>
+<li><sup>11</sup> 关联容器迭代器的基本属性是它们以非降序的顺序迭代容器，而非降序是由用来构造它们的比较来定义的。对于任意两个可解引用迭代器<code>i</code>和<code>j</code>，使得从<code>i</code>到<code>j</code>的距离是正的，下面的条件成立：</li>
+</ul>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token function">value_comp</span><span class="token punctuation">(</span><span class="token operator">*</span>j<span class="token punctuation">,</span> <span class="token operator">*</span>i<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token boolean">false</span>
+</pre><ul>
+<li><sup>12</sup> 对于具有唯一键的关联容器，更强的条件是：</li>
+</ul>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token function">value_comp</span><span class="token punctuation">(</span><span class="token operator">*</span>i<span class="token punctuation">,</span> <span class="token operator">*</span>j<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token boolean">false</span>
+</pre><ul>
+<li><sup>13</sup> 当通过传递比较对象构造关联容器时，容器不应存储传递对象的指针或引用，即使该对象是通过引用传递的。当通过复制构造函数或赋值运算符复制关联容器时，目标容器应使用来自复制容器的比较对象，就像该比较对象在其构造函数中已被传递到目标容器。</li>
+<li><sup>14</sup> 成员函数模板<code>find</code>、<code>count</code>、<code>lower_bound</code>、<code>upper_bound</code>和<code>equal_range</code>不应参与重载方案，除非 <em>限定标识符</em> <code>Compare::is_transparent</code>有效且表示一个类型（<a href="c17#s8.2">17.8.2</a>）。</li>
+<li><sup>15</sup> 关联容器的推导器不应参与重载方案，如果下列任何一项是正确的：</li>
+<li>
+<ul>
+<li><sup>(15.1)</sup> 它具有一个<code>InputIterator</code>模板参数，并且没有为该参数推导出一个符合输入迭代器的类型。</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><sup>(15.2)</sup> 它有一个<code>Allocator</code>模板参数，并且没有为该参数导出一个符合分配器的类型。</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><sup>(15.3)</sup> 它有一个<code>Compare</code>模板参数，并为该参数导出一个符合分配器的类型。</li>
+</ul>
+</li>
+</ul>
+<h4 class="mume-header undefined" id="s2.6.1">26.2.6.1 异常安全保证</h4>
+
+<ul>
+<li><sup>1</sup> 对于关联容器，没有<code>clear()</code>函数抛出异常。<code>erase(k)</code>不会抛出异常，除非容器的比较对象引发该异常（如果有的话）。</li>
+<li><sup>2</sup> 对于关联容器，如果插入单个元素的<code>insert</code>或<code>emplace</code>函数中的任何操作抛出异常，则插入没有效果。</li>
+<li><sup>3</sup> 对于关联容器，没有<code>swap</code>函数抛出异常，除非容器的<code>Compare</code>对象的交换抛出异常（如果有的话）。</li>
+</ul>
 
       </div>
 
