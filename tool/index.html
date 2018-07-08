@@ -1,0 +1,53 @@
+<html>
+
+<head>
+    <title>工具 | 北辰</title>
+    <link rel="stylesheet" type="text/css" href="/style/base.css">
+    <link rel="stylesheet" type="text/css" href="/style/new.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({"extensions":["tex2jax.js"],"jax":["input/TeX","output/HTML-CSS"],"messageStyle":"none","tex2jax":{"processEnvironments":false,"processEscapes":true,"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"extensions":["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]},"HTML-CSS":{"availableFonts":["TeX"]}});
+      </script>
+      <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js"></script>
+</head>
+<body for="html-export">
+<div class="mume markdown-preview">
+<h1 class="mume-header undefined" id="title">工具</h1>
+<hr>
+<p>
+    <span>Number: </span>
+    <input type="text" id="link" value="2383" />
+    <input type="button" value="Preview Jump" onclick="jump1()" />
+    <input type="button" value="Spirit Jump" onclick="jump2()" />
+    <input type="button" value="Icon Jump" onclick="jump3()" />
+    <input type="button" value="Picture Jump" onclick="jump4()" />
+</p>
+</div>
+<script>
+function jump1()
+{
+    var link = document.getElementById('link').value;
+    while (link.length < 3) link = '0' + link;
+    location.href = 'http://res.17roco.qq.com/res/combat/previews/' + link + '-idle.swf';
+}
+function jump2()
+{
+    var link = document.getElementById('link').value;
+    while (link.length < 3) link = '0' + link;
+    location.href = 'http://res.17roco.qq.com/res/combat/spirits/' + link + '-.swf';
+}
+function jump3()
+{
+    var link = document.getElementById('link').value;
+    while (link.length < 3) link = '0' + link;
+    location.href = 'http://res.17roco.qq.com/res/combat/icons/' + link + '-.png';
+}
+function jump4()
+{
+    var link = document.getElementById('link').value;
+    location.href = 'http://res.17roco.qq.com/webapp/rocoBox/petIcon/' + link + '.png';
+}
+</script>
+</body>
+</html>
