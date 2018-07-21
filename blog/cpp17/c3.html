@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>第3章 术语和定义 | C++17标准</title>
+      <link rel="stylesheet" type="text/css" href="/style/base.css">
+      <link rel="stylesheet" type="text/css" href="/style/new.css">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({"extensions":["tex2jax.js"],"jax":["input/TeX","output/HTML-CSS"],"messageStyle":"none","tex2jax":{"processEnvironments":false,"processEscapes":true,"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"extensions":["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]},"HTML-CSS":{"availableFonts":["TeX"]}});
+        </script>
+        <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js"></script>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview   ">
+      <h1 class="mume-header undefined" id="title">3 术语和定义 <span class="float-right">[intro.defs]</span></h1>
+
+<p>本文为博主原创文章，未经博主允许不得转载。</p>
+<hr>
+<p><sup>1</sup> 由于本文档的目的，ISO/IEC 2382-1:1993中给出的术语和定义，ISO 80000-2:2009中给出的术语、定义和符号，以及下列内容被运用。<br>
+<sup>2</sup> ISO和IEC在以下地址维护术语数据库用于标准化：<br>
+<sup>(2.1)</sup> ——IEC在线电工词汇：<a href="http://www.electropedia.org/">http://www.electropedia.org/</a><br>
+<sup>(2.2)</sup> ——ISO在线浏览平台：<a href="http://www.iso.org/obp">http://www.iso.org/obp</a><br>
+<sup>3</sup> 第20.3节定义了仅在第20至33章和附录D中使用的附加术语。<br>
+<sup>4</sup> 仅在文档的一小部分中使用的术语被定义在使用它们的地方，并在它们被定义的地方用斜体表示。</p>
+<hr>
+<h2 class="mume-header undefined" id="s1">3.1 访问 <span class="float-right">[defns.access]</span></h2>
+
+<p>〈执行时动作〉 读取或修改对象的值</p>
+<hr>
+<h2 class="mume-header undefined" id="s2">3.2 实参 <span class="float-right">[defns.argument]</span></h2>
+
+<p>〈函数调用表达式〉 由括号限定的逗号分隔表中的表达式（8.2.2）</p>
+<hr>
+<h2 class="mume-header undefined" id="s3">3.3 实参 <span class="float-right">[defns.argument.macro]</span></h2>
+
+<p>〈函数类似宏〉 括号内逗号分隔列表中的预处理标记序列（19.3）</p>
+<hr>
+<h2 class="mume-header undefined" id="s4">3.4 实参 <span class="float-right">[defns.argument.throw]</span></h2>
+
+<p>〈抛出表达式〉 <code>throw</code>的操作量（8.17）</p>
+<hr>
+<h2 class="mume-header undefined" id="s5">3.5 实参 <span class="float-right">[defns.argument.templ]</span></h2>
+
+<p>〈模板实例化〉 常量表达式，由角括号限定的逗号分隔列表中的常量表达式、类型ID或ID表达式（17.3）</p>
+<hr>
+<h2 class="mume-header undefined" id="s6">3.6 阻塞 <span class="float-right">[defns.block]</span></h2>
+
+<p>阻塞的线程执行在它越过阻塞操作可以继续执行前，正在等待某些条件（不让实现执行其执行步骤）成立</p>
+<hr>
+<h2 class="mume-header undefined" id="s7">3.7 条件性支持 <span class="float-right">[defns.cond.supp]</span></h2>
+
+<p>实现不需要支持的程序构造<br>
+【注：每个实现用文档记录不支持的所有条件性支持的构造。——注结束】</p>
+<hr>
+<h2 class="mume-header undefined" id="s8">3.8 诊断消息 <span class="float-right">[defns.diagnostic]</span></h2>
+
+<p>属于实现定义的实现的输出消息的子集的消息</p>
+<hr>
+<h2 class="mume-header undefined" id="s9">3.9 动态类型 <span class="float-right">[defns.dynamic.type]</span></h2>
+
+<p>〈广义左值〉 广义左值引用的最深派生对象（4.5）的类型<br>
+【例：如果指针（113.1）<code>p</code>的静态类型是“类<code>B</code>的指针”，且指向从<code>B</code>派生的类<code>D</code>对象（第13章），则表达式<code>*p</code>的动态类型是“<code>D</code>”。引用（113.2）被相似对待。——例结束】</p>
+<hr>
+<h2 class="mume-header undefined" id="s10">3.10 动态类型 <span class="float-right">[defns.dynamic.type.prvalue]</span></h2>
+
+<p>〈纯右值〉 纯右值表达式的静态类型</p>
+<hr>
+<h2 class="mume-header undefined" id="s11">3.11 非法程序 <span class="float-right">[defns.ill.formed]</span></h2>
+
+<p>不符合语法（3.29）的程序</p>
+<hr>
+<h2 class="mume-header undefined" id="s12">3.12 实现定义行为 <span class="float-right">[defns.impl.defined]</span></h2>
+
+<p>对于合法程序构造和正确数据，取决于实现和每个实现文档的行为</p>
+<hr>
+<h2 class="mume-header undefined" id="s13">3.13 实现限制 <span class="float-right">[defns.impl.limits]</span></h2>
+
+<p>实现对程序的限制</p>
+<hr>
+<h2 class="mume-header undefined" id="s14">3.14 区域特定行为 <span class="float-right">[defns.locale.specific]</span></h2>
+
+<p>取决于国籍、文化和语言的区域惯例的每个实现用文档记录的行为</p>
+
+      </div>
+
+
+    </body>
+
+
+
+
+
+
+
+  </html>
