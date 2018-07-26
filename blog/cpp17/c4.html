@@ -25,11 +25,120 @@
 <sup>(2.2)</sup> ——如果程序包含违反任何可诊断规则或在本标准中描述为“有条件支持”的构造发生，当实现不支持该构造时，一致的实现应发出至少一个诊断消息。<br>
 <sup>(2.3)</sup> ——如果程序包含违反不要求诊断的规则，本国际标准不要求关于该程序的实现。<br>
 【<em>注：</em> 在模板实参推导和替换过程中，其他上下文中要求诊断的某些构造被不同对待；参见<a href="c17#s8.2">17.8.2</a>。<em>——注结束</em>】<br>
-<sup>3</sup> 对于类和类模板，库章节指定部分定义。私有成员（第<a href="c14">14</a>章）未指定，但每个实现应提供它们以根据库章节中的描述完成定义。</p>
+<sup>3</sup> 对于类和类模板，库章节指定部分定义。私有成员（第<a href="c14">14</a>章）未指定，但每个实现应提供它们以根据库章节中的描述完成定义。<br>
+<sup>4</sup> 对于函数、函数模板、对象和值，库章节规定声明。实现应提供与库章节中描述一致的定义。<br>
+<sup>5</sup> 在库中定义的名称具有命名空间范围（<a href="c10#s3">10.3</a>）。C++翻译单元（<a href="c5#s2">5.2</a>）通过包含适当的标准库头文件（<a href="c19#s2">19.2</a>）来获得对这些名称的访问。<br>
+<sup>6</sup> 库中的模板、类、函数和对象具有外部链接（<a href="c6#s5">6.5</a>）。必要时，实现提供标准库实体的定义，同时结合翻译单元以形成完整的C++程序（<a href="c5#s2">5.2</a>）。<br>
+<sup>7</sup> 实现有两种定义：<em>托管实现</em> 和 <em>独立实现</em>。对于托管实现，本国际标准定义了可用库的集合。独立实现是一种在没有操作系统的好处的情况下执行的方法，它有一个包含某些语言支持库（<a href="c20#s5.1.3">20.5.1.3</a>）的实现定义的库的集合。<br>
+<sup>8</sup> 一致的实现可以具有扩展（包括附加库函数），前提是它们不改变任何合法程序的行为。实现要求根据本国际标准诊断非法使用这种扩展的程序。然而，他们可以编译和执行这种程序。<br>
+<sup>9</sup> 每个实现应包括文档，标识所有不支持的有条件支持的构造，并定义所有区域特定的特性。<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+<hr>
+<h2 class="mume-header undefined" id="s2">4.2 文档结构 <span class="float-right">[intro.structure]</span></h2>
+
+<p><sup>1</sup> 第<a href="c5">5</a>到<a href="c19">19</a>章描述了C++编程语言。该描述包括详细语法规范，以第4.3节中描述的形式描述。为方便起见，附录<a href="a1">A</a>重复所有这种语法规范。<br>
+<sup>2</sup> 第<a href="c21">21</a>至<a href="c33">33</a>章和附录<a href="a4">D</a>（库章节）描述了C++标准库。该描述包括对构成库的实体和宏的详细描述，以第<a href="c20">20</a>章中描述的形式描述。<br>
+<sup>3</sup> 附录<a href="a2">B</a>推荐一致性实现的容量下限。<br>
+<sup>4</sup> 附录<a href="a3">C</a>总结了C++第一次发的描述以来的演变，并详细解释了C++和C之间的区别。C++的某些特性仅为兼容性的目的而存在；附件<a href="a3">D</a>描述了这些特性。<br>
+<sup>5</sup> 在整个文档中，每个示例都由“【<em>例：</em>”引入，并由“<em>——例结束</em>】”终止。每个注释都由“【<em>注：</em>”引入，并由“<em>——注结束</em>】”终止。示例和注释可以嵌套。</p>
+<hr>
+<h2 class="mume-header undefined" id="s3">4.3 语法标记 <span class="float-right">[syntax]</span></h2>
+
+<p><sup>1</sup> 在本文档使用的语法标记中，语法类型由斜体类型和固定宽度类型的文字和字符表示。替代方案在单独的行中列出，除了少数情况下，一组较长的备选方案用短语“……中的一个”来标记。如果替代文本太长，无法在一行上拟合，则文本在第一个缩进的后续行上继续。可选的末端或非末端符号用下标“<sub>可选</sub>”表示，因此<br>
+<code>{</code>表达式<sub>可选</sub><code>}</code><br>
+表示一个可选的表达式，括在花括号内。<br>
+<sup>2</sup> 语法类别的名称一般根据下列规则选择：<br>
+<sup>(2.1)</sup> ——X名称是标识符在确定其含义的上下文中的使用（例如类名称、类型定义名称）。<br>
+<sup>(2.2)</sup> ——X标识符是一个没有上下文相关含义的标识符（例如，限定标识符）。<br>
+<sup>(2.3)</sup> ——X序列是一个或多个没有介入定界符的X（例如，声明序列是一个由声明组成的序列）。<br>
+<sup>(2.4)</sup> ——X列表是由中间逗号分隔的一个或多个X（例如，标识符列表是由逗号分隔的标识符序列）。</p>
+<hr>
+<h2 class="mume-header undefined" id="s4">4.4 C++内存模型 <span class="float-right">[intro.memory]</span></h2>
+
+<p><sup>1</sup> C++内存模型中的基本存储单元是 <em>字节</em>。一个字节至少大到足以包含基本执行字符集（<a href="c5#s3">5.3</a>）的任何成员和Unicode UTF-8编码格式的八位代码单元，并且由一个连续的位序列组成，<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>其数目是实现定义的。最低有效位称为 <em>低阶位</em>，最高有效位称为 <em>高阶位</em>。C++程序可用的内存由一个或多个相邻字节序列组成。每个字节都有唯一的地址。<br>
+<sup>2</sup> 【注：类型的表示在第<a href="c6#s9">6.9</a>节中描述。——注结束】<br>
+<sup>3</sup> <em>内存位置</em> 是标量类型的对象，或者是具有非零宽度的相邻位域的最大序列。【注：语言的各种特性，如引用和虚拟函数，可能涉及到程序无法访问但由实现管理的附加内存位置。——注结束】两个或多个执行线程（<a href="#s7">4.7</a>）可以在不干扰彼此的情况下访问单独的内存位置。<br>
+<sup>4</sup> 【<em>注：</em> 这样，位域和相邻的非位域位于单独的内存位置，因此可以由两个执行线程同时更新而不发生干扰。同样的情况适用于两个位域，如果一个声明在嵌套结构声明中，另一个不是，或者如果这两个字段被零长度位域声明分隔开，或者如果它们被非位域声明分隔开。如果它们之间的所有字段也是非零宽度的位域，则并发更新同一结构中的两个位域是不安全的。<em>——注结束</em>】<br>
+<sup>5</sup> 【<em>例：</em> 声明如下结构</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword">struct</span> <span class="token punctuation">{</span>
+  <span class="token keyword">char</span> a<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> b<span class="token operator">:</span><span class="token number">5</span><span class="token punctuation">,</span>
+  c<span class="token operator">:</span><span class="token number">11</span><span class="token punctuation">,</span>
+  <span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span>
+  d<span class="token operator">:</span><span class="token number">8</span><span class="token punctuation">;</span>
+  <span class="token keyword">struct</span> <span class="token punctuation">{</span><span class="token keyword">int</span> ee<span class="token operator">:</span><span class="token number">8</span><span class="token punctuation">;</span><span class="token punctuation">}</span> e<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</pre><p>包含四个独立的内存位置：字段<code>a</code>与位域<code>d</code>和<code>e.ee</code>是每个单独的存储器位置，并且可以同时修改而不相互干扰。位域<code>b</code>和<code>c</code>一起构成第四个内存位置。位域<code>b</code>和<code>c</code>不能同时修改，但例如<code>b</code>和<code>a</code>就可以。<em>——例结束</em>】</p>
+<hr>
+<h2 class="mume-header undefined" id="s5">4.5 C++对象模型 <span class="float-right">[intro.object]</span></h2>
+
+<p><sup>1</sup> C++程序的构造创建、销毁、引用、访问并操纵对象。当隐式地改变联合（第<a href="c12#s3">12.3</a>节）的活动成员时，或者当创建临时对象（第<a href="c7#s4">7.4</a>、<a href="c15#s2">15.2</a>节）时，由定义（第<a href="c6#s1">6.1</a>节）或new表达式（第<a href="c8#s3.4">8.3.4</a>节）创建对象。对象在其构建周期（第<a href="c15#s7">15.7</a>节）中占据一个存储区域，贯穿其一生（第<a href="c6#s8">6.8</a>节），也在其销毁期间（第<a href="c15#s7">15.7</a>节）。【<em>注：</em> 函数不是对象，不管它是否以对象的方式占用存储。<em>——注结束</em>】对象的属性是在创建对象时确定的。对象可以有名称（第<a href="c6">6</a>章）。对象具有存储时间（第<a href="c6#s7">6.7</a>节），影响其寿命（第<a href="c6#s8">6.8</a>节）。对象具有类型（第<a href="c6#s9">6.9</a>节）。某些对象是多态的（第<a href="c13#s3">13.3</a>节）；实现生成与每个这样的对象相关联的信息，使得在程序执行期间确定对象的类型成为可能。对于其他对象，在其中找到的值的解释由用于访问它们的 <em>表达式</em>（第<a href="c8">8</a>章）的类型确定。<br>
+<sup>2</sup> 对象可以包含其他对象，称为 <em>子对象</em>。子对象可以是 <em>成员子对象</em>（第<a href="c12#s2">12.2</a>节）、<em>基类子对象</em>（第<a href="c13">13</a>章）或数组元素。不是任何其他对象子对象的对象称为 <em>完整对象</em>。如果对象在与成员子对象或数组元素 <em>e</em> 相关联的存储中创建（其可能或可能不在其生存期内），则创建的对象是包含对象的 <em>e</em> 的子对象，如果：<br>
+<sup>(2.1)</sup> ——<em>e</em> 的包含对象的生命周期已经开始并没有结束，且<br>
+<sup>(2.2)</sup> ——新对象的存储正好覆盖了与 <em>e</em> 相关的存储位置，且<br>
+<sup>(2.3)</sup> ——新对象的类型与 <em>e</em> 相同（忽略cv限定符）。<br>
+【<em>注：</em> 如果子对象包含引用成员或常量子对象，则不能使用原始子对象的名称来访问新对象（第<a href="c6#s8">6.8</a>节）。<em>——注结束</em>】【<em>例：</em></p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword">struct</span> X <span class="token punctuation">{</span> <span class="token keyword">const</span> <span class="token keyword">int</span> n<span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">union</span> U <span class="token punctuation">{</span> X x<span class="token punctuation">;</span> <span class="token keyword">float</span> f<span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">void</span> <span class="token function">tong</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  U u <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  u<span class="token punctuation">.</span>f <span class="token operator">=</span> <span class="token number">5.f</span><span class="token punctuation">;</span>                          <span class="token comment">// 很好，创建u的新子对象（第12.3节）</span>
+  X <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>u<span class="token punctuation">.</span>x<span class="token punctuation">)</span> X <span class="token punctuation">{</span><span class="token number">2</span><span class="token punctuation">}</span><span class="token punctuation">;</span>            <span class="token comment">// 很好，创建u的新子对象</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span>p<span class="token operator">-</span><span class="token operator">></span>n <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                  <span class="token comment">// 很好</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span><span class="token operator">*</span>std<span class="token operator">::</span><span class="token function">launder</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>u<span class="token punctuation">.</span>x<span class="token punctuation">.</span>n<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 很好</span>
+  <span class="token function">assert</span><span class="token punctuation">(</span>u<span class="token punctuation">.</span>x<span class="token punctuation">.</span>n <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment">// 未定义行为，u.x不名为新的子对象</span>
+<span class="token punctuation">}</span>
+</pre><p><em>——例结束</em>】<br>
+<sup>3</sup> 如果一个完整对象在关联另一类型为“<em>N</em> 个<code>unsigned char</code>的数组”或“<em>N</em> 个<code>std::byte</code>的数组”（第<a href="c21#s2.1">21.2.1</a>节）的对象 <em>e</em> 的存储中创建（第<a href="c8#s3.4">8.3.4</a>节），则该数组为所创建的对象 <em>提供存储</em>，如果：<br>
+<sup>(3.1)</sup> ——<em>e</em> 的生命已经开始并没有结束，且<br>
+<sup>(3.2)</sup> ——新对象的存储完全适合 <em>e</em>，且<br>
+<sup>(3.3)</sup> ——没有满足这些约束的更小数组对象。<br>
+【<em>注：</em> 如果数组的那个部分先前为另一个对象提供了存储，则该对象的生命周期结束，因为它的存储被重用（第<a href="c6#s8">6.8</a>节）。<em>——注结束</em>】【<em>例：</em></p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>T<span class="token operator">></span>
+<span class="token keyword">struct</span> AlignedUnion <span class="token punctuation">{</span>
+  <span class="token keyword">alignas</span><span class="token punctuation">(</span>T<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> data<span class="token punctuation">[</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>T<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">f</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  AlignedUnion<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">></span> au<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token punctuation">(</span>au<span class="token punctuation">.</span>data<span class="token punctuation">)</span> <span class="token keyword">int</span><span class="token punctuation">;</span>     <span class="token comment">// 好的，au.data提供存储</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>c <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token punctuation">(</span>au<span class="token punctuation">.</span>data<span class="token punctuation">)</span> <span class="token keyword">char</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 好的，结束*p的生命期</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>d <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token punctuation">(</span>au<span class="token punctuation">.</span>data <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">char</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token operator">*</span>c <span class="token operator">+</span> <span class="token operator">*</span>d<span class="token punctuation">;</span> <span class="token comment">// 好的</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> A <span class="token punctuation">{</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> a<span class="token punctuation">[</span><span class="token number">32</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">struct</span> B <span class="token punctuation">{</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> b<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+A a<span class="token punctuation">;</span>
+B <span class="token operator">*</span>b <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token punctuation">(</span>a<span class="token punctuation">.</span>a <span class="token operator">+</span> <span class="token number">8</span><span class="token punctuation">)</span> B<span class="token punctuation">;</span>      <span class="token comment">// a.a为*b提供存储</span>
+<span class="token keyword">int</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token punctuation">(</span>b<span class="token operator">-</span><span class="token operator">></span>b <span class="token operator">+</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token keyword">int</span><span class="token punctuation">;</span> <span class="token comment">// b->b为*p提供存储</span>
+                             <span class="token comment">// a.a不（直接）为*p提供存储，</span>
+                             <span class="token comment">// 但是*p嵌套在a中（见下）</span>
+</pre><p><em>——例结束</em>】<br>
+<sup>4</sup> 对象 <em>a 嵌套在</em> 另一个对象 <em>b 中</em>，如果：<br>
+<sup>(4.1)</sup> ——<em>a</em> 是 <em>b</em> 的子对象，或<br>
+<sup>(4.2)</sup> ——<em>b</em> 为 <em>a</em> 提供存储，或<br>
+<sup>(4.3)</sup> ——存在一个对象 <em>c</em>，其中 <em>a</em> 嵌套在 <em>c</em> 中，<em>c</em> 嵌套在 <em>b</em> 中。<br>
+<sup>5</sup> 对于每个对象<code>x</code>，有一个对象称为<code>x</code><em>的完整对象</em>，确定方法如下：<br>
+<sup>(5.1)</sup> ——如果<code>x</code>是一个完整对象，那么<code>x</code>的完整对象就是它自己。<br>
+<sup>(5.2)</sup> ——否则，<code>x</code>的完整对象是包含<code>x</code>的（唯一）对象的完整对象。<br>
+<sup>6</sup> 如果完整对象、数据成员（第<a href="c12#s2">12.2</a>节）或数组元素是类类型的，则它的类型被认为是 <em>最深派生类</em>，以区别于任何基类子对象的类类型；最深派生类或非类类型的对象被称为 <em>最深派生对象</em>。<br>
+<sup>7</sup> 除非它是位域（第<a href="c12#s2.4">12.2.4</a>节），否则最深派生对象将具有非零大小，并将占用一个或多个字节的存储。基类子对象可以具有零大小。平凡可复制或标准布局类型（第<a href="c6#s9">6.9</a>节）的对象将占用连续的字节存储。<br>
+<sup>8</sup> 除非一个对象是一个位域或一个零大小的基类子对象，否则该对象的地址是它所占用的第一个字节的地址。两个具有重叠的生命期的非位域对象 <em>a</em> 和 <em>b</em> 可能具有相同的地址，如果一个嵌套在另一个中，或者如果至少一个是零大小的基类子对象，且它们是不同类型的；否则，它们具有不同的地址。<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup><br>
+【<em>例：</em></p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword">static</span> <span class="token keyword">const</span> <span class="token keyword">char</span> test1 <span class="token operator">=</span> ’x’<span class="token punctuation">;</span>
+<span class="token keyword">static</span> <span class="token keyword">const</span> <span class="token keyword">char</span> test2 <span class="token operator">=</span> ’x’<span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token keyword">bool</span> b <span class="token operator">=</span> <span class="token operator">&amp;</span>test1 <span class="token operator">!=</span> <span class="token operator">&amp;</span>test2<span class="token punctuation">;</span> <span class="token comment">// 总是true</span>
+</pre><p><em>——例结束</em>】<br>
+<sup>9</sup> 【<em>注：</em> C++提供了多种基本类型和几种从现有类型组成新类型的方法（第<a href="c6#s9">6.9</a>节）。<em>——注结束</em>】</p>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p><sub>(2)</sub>“正确执行”可以包括未定义的行为，这取决于正在处理的数据；参见第<a href="c3">3</a>章和第<a href="c4#s6">4.6</a>节。 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p><sub>(2)</sub> “正确执行”可以包括未定义的行为，这取决于正在处理的数据；参见第<a href="c3">3</a>章和第<a href="#s6">4.6</a>节。 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><sub>(3)</sub> 本文档还定义了实现定义行为；参见第<a href="#s6">4.6</a>节。 <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><sub>(4)</sub> 字节中的位数由头文件<code>&lt;climits&gt;</code>中的宏<code>CHAR_BIT</code>报告。 <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><sub>(5)</sub> 在“似乎”规则下，如果程序不能观察到差异（第<a href="#s6">4.6</a>节），则允许实现在同一个机器地址上存储两个对象或者根本不存储对象。 <a href="#fnref4" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
