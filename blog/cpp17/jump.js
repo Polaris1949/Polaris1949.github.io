@@ -3,11 +3,60 @@ function empty(obj)
     return obj == undefined || obj.length <= 0;
 }
 
-function numstr(obj)
+function message(obj)
+{
+    document.getElementById("msg").innerHTML += "<p>" + obj + "</p>";
+}
+
+function is_numstr(obj)
 {
     if (empty(obj)) return false;
     var reg = /^\d+(\d+)?$/;
     return reg.test(obj);
+}
+
+function boolstr(str)
+{
+    if (empty(str)) return false;
+    return str != "false" && str != "0";
+}
+
+function dest_clause(clause)
+{
+    var dest = "";
+
+    if (is_numstr(clause))
+    {
+        dest += "c";
+        dest += clause;
+    }
+    else
+    {
+        dest += "a";
+        if (clause.length > 1)
+            message("warning: only first character affected; remaining ignored [c=]");
+        dest += clause[0].toLowerCase().charCodeAt() - 'a'.charCodeAt() + 1;
+    }
+
+    return dest;
+}
+
+function dest_subclause(subclause)
+{
+    var dest = "";
+
+    if (!empty(subclause))
+    {
+        dest += "#s";
+        dest += subclause;
+    }
+
+    return dest;
+}
+
+function do_jump(url)
+{
+    window.location.href = url;
 }
 
 function jump()
@@ -17,6 +66,7 @@ function jump()
     var subclause = "";
     var loc = "";
     var dest = "";
+    var debug = false;
     var tmp;
     str = str.substr(1);
 
@@ -32,16 +82,17 @@ function jump()
         switch (par)
         {
             case "c": clause = arg; break;
-            case "s": subclause = arg; break;
+            case "d": debug = boolstr(arg); break;
             case "l": loc = arg; break;
-            default: break;
+            case "s": subclause = arg; break;
+            default: message("warning: unknown option ignored [" + par + "=]"); break;
         }
     }
 
     if (!empty(loc))
     {
         if (!empty(clause) || !empty(subclause))
-            document.getElementById("msg").innerHTML += "<p>warning: redundant location; clause and subclause ignored</p>";
+            message("warning: redundant location; clause and subclause ignored [l=]");
 
         tmp = loc.split('.');
         clause = tmp[0];
@@ -53,31 +104,23 @@ function jump()
             subclause += tmp[i];
         }
 
-        dest += "c";
-        dest += clause;
-
-        if (!empty(subclause))
-        {
-            dest += "#s";
-            dest += subclause;
-        }
+        dest += dest_clause(clause);
+        dest += dest_subclause(subclause);
     }
     else if (!empty(clause))
     {
-        dest = "c";
-        dest += clause;
-
-        if (!empty(subclause))
-        {
-            dest += "#s";
-            dest += subclause;
-        }
+        dest += dest_clause(clause);
+        dest += dest_subclause(subclause);
     }
     else if (!empty(subclause))
-        document.getElementById("msg").innerHTML += "<p>error: clause not found but subclause found</p>";
+        message("error: clause not found but subclause found [s=]");
 
     if (!empty(dest))
-        window.location.href = dest;
+    {
+        message("note: jump to " + dest);
+        if (debug) message("note: jump prohibited in debug mode [d=]");
+        else do_jump(dest);
+    }
     else
-        document.getElementById("msg").innerHTML += "<p>error: no destination</p>";
+        message("error: no destination");
 }
