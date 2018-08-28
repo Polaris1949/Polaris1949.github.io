@@ -3,6 +3,13 @@ function empty(obj)
     return obj == undefined || obj.length <= 0;
 }
 
+function numstr(obj)
+{
+    if (empty(obj)) return false;
+    var reg = /^\d+(\d+)?$/;
+    return reg.test(obj);
+}
+
 function jump()
 {
     var str = location.search;
@@ -40,7 +47,13 @@ function jump()
         clause = tmp[0];
         subclause = tmp[1];
 
-        dest = "c";
+        for (var i = 2; i < tmp.length; ++i)
+        {
+            subclause += ".";
+            subclause += tmp[i];
+        }
+
+        dest += "c";
         dest += clause;
 
         if (!empty(subclause))
