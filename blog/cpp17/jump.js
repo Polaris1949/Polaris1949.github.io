@@ -1,26 +1,3 @@
-function empty(obj)
-{
-    return obj == undefined || obj.length <= 0;
-}
-
-function message(obj)
-{
-    document.getElementById("msg").innerHTML += "<p>" + obj + "</p>";
-}
-
-function is_numstr(obj)
-{
-    if (empty(obj)) return false;
-    var reg = /^\d+(\d+)?$/;
-    return reg.test(obj);
-}
-
-function boolstr(str)
-{
-    if (empty(str)) return false;
-    return str != "false" && str != "0";
-}
-
 function dest_clause(clause)
 {
     var dest = "";
@@ -54,16 +31,12 @@ function dest_subclause(subclause)
     return dest;
 }
 
-function do_jump(url)
-{
-    window.location.href = url;
-}
-
 function jump()
 {
     var str = location.search;
     var clause = "";
     var subclause = "";
+    var lang = "";
     var loc = "";
     var dest = "";
     var debug = false;
@@ -82,12 +55,15 @@ function jump()
         switch (par)
         {
             case "c": clause = arg; break;
-            case "d": debug = boolstr(arg); break;
+            case "d": debug = arg; break;
+            case "g": lang = arg; break;
             case "l": loc = arg; break;
             case "s": subclause = arg; break;
             default: message("warning: unknown option ignored [" + par + "=]"); break;
         }
     }
+
+    debug = boolstr(debug);
 
     if (!empty(loc))
     {
@@ -117,27 +93,16 @@ function jump()
 
     if (!empty(dest))
     {
+        dest = lang_check(dest, lang);
         message("note: jump to " + dest);
-        if (debug) message("note: jump prohibited in debug mode [d=]");
+
+        if (debug)
+        {
+            message("note: jump prohibited in debug mode [d=]");
+            message("note: bad language support in debug mode [d=]");
+        }
         else do_jump(dest);
     }
     else
         message("error: no destination");
-}
-
-function lang_jump()
-{
-    var lang = (navigator.browserLanguage || navigator.language).toLowerCase();
-    var href = window.location.href;
-    var pos = href.lastIndexOf('/');
-    var dest = "";
-
-    switch (lang)
-    {
-        case "en-us": case "zh-cn": break;
-        default: message("warning: language unsupported; en-us by default"); lang = "en-us"; break;
-    }
-
-    dest += href.substr(0, pos) + '/' + lang + href.substr(pos);
-    do_jump(dest);
 }
