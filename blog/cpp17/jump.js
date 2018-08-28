@@ -25,7 +25,7 @@ function jump()
         switch (par)
         {
             case "c": clause = arg; break;
-            case "sc": subclause = arg; break;
+            case "s": subclause = arg; break;
             case "l": loc = arg; break;
             default: break;
         }
@@ -45,7 +45,7 @@ function jump()
 
         if (!empty(subclause))
         {
-            dest += "#sc";
+            dest += "#s";
             dest += subclause;
         }
     }
@@ -56,7 +56,7 @@ function jump()
 
         if (!empty(subclause))
         {
-            dest += "#sc";
+            dest += "#s";
             dest += subclause;
         }
     }
