@@ -13,11 +13,11 @@
 </head>
 <body for="html-export">
 <div class="mume markdown-preview">
-<h1 class="mume-header undefined" id="title">工具</h1>
+<h1 class="mume-header undefined" id="title">Tool</h1>
 <hr>
 <p>
     <span>Number: </span>
-    <input type="text" id="link" value="11644" />
+    <input type="text" id="link" value="11698" />
     <br>
     <span>Jump: </span>
     <input type="button" value="Preview" onclick="jump1()" />
@@ -26,30 +26,6 @@
     <input type="button" value="Picture" onclick="jump4()" />
 </p>
 </div>
-<script>
-function jump1()
-{
-    var link = document.getElementById('link').value;
-    while (link.length < 3) link = '0' + link;
-    location.href = 'http://res.17roco.qq.com/res/combat/previews/' + link + '-idle.swf';
-}
-function jump2()
-{
-    var link = document.getElementById('link').value;
-    while (link.length < 3) link = '0' + link;
-    location.href = 'http://res.17roco.qq.com/res/combat/spirits/' + link + '-.swf';
-}
-function jump3()
-{
-    var link = document.getElementById('link').value;
-    while (link.length < 3) link = '0' + link;
-    location.href = 'http://res.17roco.qq.com/res/combat/icons/' + link + '-.png';
-}
-function jump4()
-{
-    var link = document.getElementById('link').value;
-    location.href = 'http://res.17roco.qq.com/webapp/rocoBox/petIcon/' + link + '.png';
-}
-</script>
+<script src="tool.js"></script>
 </body>
 </html>
