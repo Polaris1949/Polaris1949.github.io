@@ -124,3 +124,20 @@ function jump()
     else
         message("error: no destination");
 }
+
+function lang_jump()
+{
+    var lang = (navigator.browserLanguage || navigator.language).toLowerCase();
+    var href = window.location.href;
+    var pos = href.lastIndexOf('/');
+    var dest = "";
+
+    switch (lang)
+    {
+        case "en-us": case "zh-cn": break;
+        default: message("warning: language unsupported; en-us by default"); lang = "en-us"; break;
+    }
+
+    dest += href.substr(0, pos) + '/' + lang + href.substr(pos);
+    do_jump(dest);
+}
