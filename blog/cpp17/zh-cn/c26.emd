@@ -1,0 +1,457 @@
+# 26 容器库 {#title}
+译注：翻译进行中。部分过长表格将在翻译完成后修订。将考虑构建英文修订版本。
+
+------------------------------------------------
+
+## 26.1 简介 {#s1}
+- ^1^ 本节描述C++程序中可以用来组织信息收集的组件。
+- ^2^ 下面几节描述了容器的要求，以及序列容器和关联容器的组件，总结在表[82](#t82)中。
+
+###### 表82——容器库总结 {#t82 .table-title}
+| 子章节 | 头文件 |
+|------|------|
+| [26.2](#s2) 要求 | |
+| [26.3](#s3) 序列容器 | `<array>` !!! `<deque>` !!! `<forward_list>` !!! `<list>` !!! `<vector>` |
+| [26.4](#s4) 关联容器 | `<map>` !!! `<set>` |
+| [26.5](#s5) 无序关联容器 | `<unordered_map>` !!! `<unordered_set>` |
+| [26.6](#s6) 容器适配器 | `<queue>` !!! `<stack>` |
+
+------------------------------------------------
+
+## 26.2 容器要求 {#s2}
+### 26.2.1 容器要求简介 {#s2.1}
+- ^1^ 容器是存储其它对象的对象。它们通过构造函数、析构函数、插入和删除操作来控制这些对象的分配和释放。
+- ^2^ 本节中所有的复杂度要求仅以包含对象的操作数表示。【*例：* 类型`vector<vector<int>>`的构造函数有线性复杂度，即使拷贝每个包含的`vector<int>`的复杂度本身就是线性的。*——例结束*】
+- ^3^ 本节中的组件都声明了一个`allocator_type`，存储在这些组件中的对象应使用`allocator_traits<allocator_type>::rebind_traits<U>::construct`函数构造并使用`allocator_traits<allocator_type>::rebind_traits<U>::destroy`函数销毁（[23.10.8.2](c23#s10.3.2)），且`U`是`allocator_type::value_type`或一种容器使用的内置类型。这些函数仅为容器的元素类型调用，不为容器使用的内置类型调用。【*注：* 这意味着，例如，基于节点的容器可能需要构造包含对齐缓冲区的节点，并调用`construct`将元素放置到缓冲区中。*——注结束*】
+- ^4^ 在表[83](#t83)、[84](#t84)和[85](#t85)中，`X`表示一个包含对象类型为`T`的容器类，`a`和`b`表示类型为`X`的值，`u`表示一个标识符，`r`表示类型`X`的一个非常量值，`rv`表示类型`X`的一个非常量右值。
+
+###### 表83——容器要求 {#t83 .table-title}
+| 表达式 | 返回类型 | 操作 !!! 语义 | 断言/说明 !!! 前置/后置条件 | 复杂度 |
+|------|------|------|------|------|
+| `X::value_type` | `T` | | *要求：*`T`从`X`中是`Erasable`（见[26.2.1](#s2.1)下方） | 编译时 |
+| `X::reference` | `T&` | | | 编译时 |
+| `X::const_reference` | `const T&` | | | 编译时 |
+| `X::iterator` | 值类型为`T`的迭代器类型 | | 任何满足前向迭代器的迭代器类别。 !!! 可转换为`X::const_iterator`。 | 编译时 |
+| `X::const_iterator` | 值类型为`T`的常量迭代器类型 | | 任何满足前向迭代器的迭代器类别。 | 编译时 |
+| `X::difference_type` | 有符号整数类型 | | 与`X::iterator`和`X::const_iterator`的差距类型相同 | 编译时 |
+| `X::size_type` | 无符号整数类型 | | `size_type`能表示`difference_type`的任意非负值 | 编译时 |
+| `X u;` | | | *后置条件：*`u.empty()` | 常量 |
+| `X()` | | | *后置条件：*`X().empty()` | 常量 |
+| `X(a)` | | | *要求：*`T`到`X`中`CopyInsertable`（见下）。 !!! *后置条件：*`a == X(a)` | 线性 |
+| `X u(a);` !!! `X u = a;` | | | *要求：*`T`到`X`中`CopyInsertable`（见下）。 !!! *后置条件：*`u == a` | 线性 |
+| `X u(rv);` !!! `X u = rv;` | | | *后置条件：*`u`应与在此次构造前`rv`拥有的值相等 | （说明B） |
+| `a = rv` | `X&` | `a`存在的所有元素被移动赋值或销毁 | `a`应与在此次赋值前`rv`拥有的值相等 | 线性 |
+| `(&a)->~X()` | `void` | | 析构函数被应用于`a`的每一个元素；任何获得的内存被释放 | 线性 |
+| `a.begin()` | `iterator`；对常量`a`是`const_iterator` | | | 常量 |
+| `a.end()` | `iterator`；对常量`a`是`const_iterator` | | | 常量 |
+| `a.cbegin()` | `const_iterator` | `const_cast<X const&>(a).begin();` | | 常量 |
+| `a.cend()` | `const_iterator` | `const_cast<X const&>(a).end();` | | 常量 |
+| `a == b` | 可转换为`bool` | `==`是一种相等关系。 !!! `equal(a.begin(), a.end(), b.begin(), b.end())` | *要求：*`T`为`EqualityComparable` | 若`a.size() != b.size()`则为常量，否则为线性 |
+| `a != b` | 可转换为`bool` | 相当于`!(a == b)` | | 线性 |
+| `a.swap(b)` | `void` | | 交换`a`和`b`的内容 | （说明A） |
+| `swap(a, b)` | `void` | `a.swap(b)` | | （说明A） |
+| `r = a` | `X&` | | *后置条件：*`r == a` | 线性 |
+| `a.size()` | `size_type` | `distance(a.begin(), a.end())` | | 常量 |
+| `a.max_size()` | `size_type` | 对最大可能容器的`distance(a.begin(), a.end())` | | 常量 |
+| `a.empty()` | 可转换为`bool` | `a.begin() == a.end()` | | 常量 |
+
+- 那些标记了“（说明A）”或“（说明B）”的条目对于`array`有线性复杂度，对于所有其它标准容器有常量复杂度。【*注：* 算法`equal()`在第[28](c28)章中定义。*——注结束*】
+- ^5^ 成员函数`size()`返回容器中的元素个数。元素个数被构造函数、插入和删除的规则所定义。
+- ^6^ `begin()`返回一个指向容器中首元素的迭代器，`end()`返回一个容器的逾尾值的迭代器。如果容器为空，那么`begin() == end()`。
+- ^7^ 在下列表达式中：
+```cpp
+i == j
+i != j
+i < j
+i <= j
+i >= j
+i > j
+i - j
+```
+- 当`i`和`j`表示容器的`iterator`类型的对象，其中一个或两个都可以被指向同一个元素且在语义上没有变化的容器的`const_iterator`类型的对象替换。
+- ^8^ 除非另有说明，在本章节中定义的所有容器都使用分配器获得内存（见[20.5.3.5](c20#s5.3.5)）。【*注：* 特别地，容器和迭代器不存储对分配元素的引用而是通过分配器的指针类型，即，作为`P`类型对象或`pointer_traits<P>::template rebind<未指定>`，且`P`为`allocator_traits<allocator_type>::pointer`。*——注结束*】这些容器类型的复制构造函数通过调用属于被复制的容器的分配器的`allocator_traits<allocator_type>::select_on_container_copy_construction`获得一个分配器。移动构造函数通过属于被移动容器的分配器的移动构造获得一个分配器。此类分配器的移动构造不应通过异常退出。这些容器类型的所有其它构造函数带有一个`const allocator_type&`参数。【*注：* 如果构造函数的调用使用可选的分配器参数的默认值，那么`Allocator`类型必须支持值初始化。*——注结束*】在每个容器对象的生命周期中或直到分配器被替换为止，此分配器的副本用于由这些构造函数和所有成员函数执行的任何内存分配和元素构造。分配器只能通过赋值或`swap()`来替换。只要在相应容器的实现中，`allocator_traits<allocator_type>::propagate_on_container_copy_assignment::value`、`allocator_traits<allocator_type>::propagate_on_container_move_assignment::value`或`allocator_traits<allocator_type>::propagate_on_container_swap::value`为真，分配器替换通过复制赋值、移动赋值或分配器的交换来执行。在本章定义的所有容器类型中，成员`get_allocator()`返回一个用于构造容器的分配器的副本，或如果该分配器已被替换，则是最近替换的副本。
+- ^9^ 表达式`a.swap(b)`，对于除`array`外标准容器类型的容器`a`和`b`，应在不调用任何单个容器元素的移动、复制或交换操作的情况下，交换`a`和`b`的值。任何属于`a`和`b`的`Compare`、`Pred`或`Hash`类型的左值应是可交换的，应通过调用描述在[20.5.3.2](c20#s5.3.2)中的`swap`来被交换。如果`allocator_traits<allocator_type>::propagate_on_container_swap::value`为真，那么`allocator_type`类型的左值应是可交换的，且`a`和`b`的分配器也应通过调用描述在[20.5.3.2](c20#s5.3.2)中的`swap`来被交换。否则，分配器不应被交换，且行为是未定义的，除非`a.get_allocator() == b.get_allocator()`。每一个在交换前指向一个容器中元素的迭代器都应在交换后指向另一个容器中的同一元素。在交换前，值为`a.end()`的迭代器是否拥有交换后的值`b.end()`是不确定的。
+- ^10^ 如果容器的迭代器类型属于双向或随机访问迭代器类别（[27.2](c27#s2)），则称该容器为 *可逆* 的，并满足表[84](#t84)中的附加要求。
+
+###### 表84——可逆容器要求 {#t84 .table-title}
+| 表达式 | 返回类型 | 断言/说明 !!! 前置/后置条件 | 复杂度 |
+|------|------|------|------|
+| `X::reverse_iterator` | 值类型为`T`的迭代器类型 | `reverse_iterator<iterator>` | 编译时 |
+| `X::const_reverse_iterator` | 值类型为`T`的常量迭代器类型 | `reverse_iterator<const_iterator>` | 编译时 |
+| `a.rbegin()` | `reverse_iterator`；对常量`a`是`const_reverse_iterator` | `reverse_iterator(end())` | 常量 |
+| `a.rend()` | `reverse_iterator`；对常量`a`是`const_reverse_iterator` | `reverse_iterator(end())` | 常量 |
+| `a.crbegin()` | `const_reverse_iterator` | `const_cast<X const&>(a).rbegin()` | 常量 |
+| `a.crend()` | `const_reverse_iterator` | `const_cast<X const&>(a).rend()` | 常量 |
+
+- ^11^ 除非另有规定（见[26.2.6.1](#s2.6.1)、[26.2.7.1](#s2.7,1)、[26.3.8.4](#s3.8.4)和[26.3.11.5](#s3.11.5)），本节中定义的所有容器类型满足以下附加要求：
+- ^(11.1)^ ——当插入单个元素时，如果异常被`insert()`或`emplace()`函数抛出，此函数无作用。
+- ^(11.2)^ ——如果异常被`push_back()`、`push_front()`、`emplace_back()`或`emplace_front()`函数抛出，此函数无作用。
+- ^(11.3)^ ——`erase()`、`clear()`、`pop_back()`或`pop_front()`函数不抛出异常。
+- ^(11.4)^ ——复制构造函数或返回的迭代器的赋值操作符不抛出异常。
+- ^(11.5)^ ——`swap()`函数不抛出异常。
+- ^(11.6)^ ——`swap()`函数不使指向被交换容器元素的引用、指针或迭代器失效。【*注：* 因为`end()`迭代器不指向任何元素，所以它可能会失效。*——注结束*】
+- ^12^ 除非另有规定（明确地或通过其他函数定义一个函数），调用容器成员函数或将容器作为参数传递给库函数，不应使指向容器中对象的迭代器失效或改变容器中对象的值。
+- ^13^ *连续容器* 是支持随机访问迭代器且成员类型`iterator`和`const_iterator`为连续迭代器的容器。
+- ^14^ 表[85](#t85)列出了为某些容器类型而不是其它类型提供的操作。提供所列出操作的容器应实现表[85](#t85)中描述的语义，除非另有说明。
+
+###### 表85——可选容器操作 {#t85 .table-title}
+| 表达式 | 返回类型 | 操作 !!! 语义 | 断言/说明 !!! 前置/后置条件| 复杂度 |
+|------|------|------|------|------|
+| `a < b` | 可转换为`bool` | `lexicographical_compare(a.begin(), a.end(), b.begin(), b.end())` | *要求：*`<`被`T`的值定义。`<`是一种全序关系。 | 线性 |
+| `a > b` | 可转换为`bool` | `b < a` | | 线性 |
+| `a <= b` | 可转换为`bool` | `!(a > b)` | | 线性 |
+| `a >= b` | 可转换为`bool` | `!(a < b)` | | 线性 |
+
+- 【*注：* 算法`lexicographical_compare()`在第[28](c28)章中定义。*——注结束*】
+- ^15^ 除`array`外，本章和[24.3.2](c24#s3.2)中定义的容器满足表[86](#t86)中描述的分配器可感容器的附加要求。
+- 给定分配器类型`A`，给定具有与`T`相同的`value_type`和与`allocator_traits<A>::rebind_alloc<T>`相同的分配器类型的容器类型`X`，给定`A`类型的左值`m`、`T*`类型的指针`p`、`T`（可能为`const`）类型的表达式`v`和`T`类型的右值`rv`，定义以下术语。如果`X`不是分配器可感的，下面的术语被定义就像`A`是`allocator<T>`一样——无需创建任何分配器对象，且`allocator<T>`的用户特化不被实例化：
+- ^(15.1)^ ——`T`到 *`X`* 中是 *`DefaultInsertable`*，意味着下列表达式是规范的：
+```cpp
+allocator_traits<A>::construct(m, p)
+```
+- ^(15.2)^ ——如果`X`的元素被此表达式的赋值初始化，它是 *默认插入的* ，
+```cpp
+allocator_traits<A>::construct(m, p)
+```
+- 其中`p`为元素分配在`X`中未初始化的存储地址。
+- ^(15.3)^ ——`T`到`X`中是`MoveInsertable`，意味着下列表达式是规范的：
+```cpp
+allocator_traits<A>::construct(m, p, rv)
+```
+- 且它的赋值导致以下后置条件存在：在赋值前，`*p`的值等于`rv`的值。【*注：*`rv`仍是一个有效对象。它的状态是不确定的。*——注结束*】
+- ^(15.4)^ ——`T`到`X`中是`CopyInsertable`，意味着除`T`是`MoveInsertable`到`X`中外，下列表达式是规范的：
+```cpp
+allocator_traits<A>::construct(m, p, v)
+```
+- 且它的赋值导致以下后置条件存在：`v`的值未改变且等于`*p`。
+- ^(15.5)^ `T`从`args`到`X`中是`EmplaceInsertable`，对于零个或更多参数的`args`，意味着下列表达式是规范的：
+```cpp
+allocator_traits<A>::construct(m, p, args)
+```
+- ^(15.6)^ `T`从`X`中是`Erasable`，意味着下列表达式是规范的：
+```cpp
+allocator_traits<A>::destroy(m, p)
+```
+- 【*注：* 容器调用`allocator_traits<A>::construct(m, p, args)`来使用`args`构造在`p`位置的元素，其中`m == get_allocator()`。`allocator`中的默认`construct`将调用`::new((void*)p) T(args)`，但特化的分配器可以选择一个不同的定义。*——注结束*】
+- ^16^ 在表[86](#t86)中，`X`表示一个`value_type`为`T`且使用`A`类型分配器的分配器可感的容器类，`u`表示一个变量，`a`和`b`表示`X`类型的非常量左值，`t`表示`X`类型的一个左值或常量右值，`rv`表示`X`类型的一个非常量右值，且`m`是`A`类型的值。
+
+###### 表86——分配器可感容器要求 {#t86 .table-title}
+| 表达式 | 返回类型 | 断言/说明 !!! 前置/后置条件 | 复杂度 |
+|------|------|------|------|
+| `allocator_type` | `A` | *要求：*`allocator_type::value_type`与`X::value_type`相同。 | 编译时 |
+| `get_allocator()` | `A` | | 常量 |
+| `X()` !!! `X u;` | | *要求：*`A`是`DefaultConstructible`。 !!! *后置条件：*`u.empty()`返回`true`，`u.get_allocator() == A()` | 常量 |
+| `X(m)` !!! `X u(m);` | | *后置条件：*`u.empty()`返回`true`，`u.get_allocator() == m` | 常量 |
+| `X(t, m)` !!! `X u(t, m);` | | *要求：*`T`到`X`中是`CopyInsertable`。 !!! *后置条件：*`u == t`，`u.get_allocator() == m` | 线性 |
+| `X rv` !!! `X u(rv);` | | *后置条件：*在构造前，`u`应有与`rv`相同的元素；在构造前，`u.get_allocator()`的值应与`rv.get_allocator()`的值相同。 | 常量 |
+| `X(rv, m)` !!! `X u(rv, m);` | | *要求：*`T`到`X`中是`MoveInsertable`。 !!! *后置条件：*在构造前，`u`应与`rv`有相同的元素或其副本，`u.get_allocator() == m` | 若`m == rv.get_allocator()`则为常量，否则为线性 |
+| `a = t` | `X&` | *要求：*`T`到`X`中是`CopyInsertable`且`CopyAssignable`。 !!! *后置条件：*`a == t` | 线性 |
+| `a = rv` | `X&` | *要求：*若`allocator_traits<allocator_type>::propagate_on_container_move_assignment::value`为`false`，`T`到`X`中是`MoveInsertable`且`MoveAssignable`。 !!! `a`的所有存在元素被移动赋值或销毁。 !!! *后置条件：*在赋值前，`a`应等于`rv`的值 | 线性 |
+| `a.swap(b)` | `void` | 交换`a`和`b`的内容 | 常量 |
+
+- ^17^ 某些容器的成员函数和推导影响行为取决于类型是否规定为输入迭代器或分配器。实现决定一个类型不能为输入迭代器的程度是不确定的，除非最小整数类型不符合输入迭代器的标准。同样地，一个实现决定一个类型不能是一个分配器的程度是不确定的，除非作为一个最小类型`A`不符合分配器的条件，除非它满足以下两个条件：
+- ^(17.1)^ ——*限定标识符*`A::value_type`是有效的并表示一个类型（[17.8.2](c17#s8.2)）。
+- ^(17.2)^ ——当视为一个未赋值的表达式时，表达式`declval<A&>().allocate(size_t{})`是合法的。
+
+### 26.2.2 容器数据竞争 {#s2.2}
+- ^1^ 为了避免数据竞争（[20.5.5.9](c20#s5.5.9)），实现应考虑以下函数为`const`：`begin`、`end`、`rbegin`、`rend`、`front`、`back`、`data`、`find`、`lower_bound`、`upper_bound`、`equal_range`、`at`，及除了关联或无序关联容器之外的`operator[]`。
+- ^2^ 虽然[20.5.5.9](c20#s5.5.9)，但是当同一容器中不同元素中包含的对象的内容同时修改时，实现需要避免数据竞争，`vector<bool>`除外。
+- ^3^ 【*注：* 对于一个有大于一个大小的`vector<int> x`，`x[1] = 5`和`*x.begin() = 10`可以在没有数据竞争的情况下同时执行，但是`x[0] = 5`和`*x.begin() = 10`同时执行可能会导致数据竞争。作为一般规则的例外，对于一个`vector<bool> y`，`y[0] = true`可以与`y[1] = true`竞争。*——注结束*】
+
+### 26.2.3 序列容器 {#s2.3}
+- ^1^ 序列容器将一个有限集合的对象组织成严格的线性排列。库提供了四种基本的序列容器：`vector`、`forward_list`、`list`和`deque`。此外，`array`被提供为一个提供有限序列操作的序列容器，因为它有固定数量的元素。该库还提供容器适配器，使构建抽象数据类型变得容易，例如`stack`和`queue`，通过使用基本顺序容器种类（或者通过使用用户可能定义的其他顺序容器）。
+- ^2^ 序列容器为程序员提供了不同的复杂性权衡，并应被相应地使用。`vector`或`array`是应被默认使用的序列容器类型。当序列中部有频繁插入和删除时，`list`或`forward_list`应被使用。当大多数插入和删除发生在序列的开头或结尾时，`deque`是选择的数据结构。
+- ^3^ 在表[87](#t87)和[88](#t88)中，`X`表示一个序列容器类；`a`表示一个包含元素类型`T`的类型`X`的一个值；u表示正被声明的变量的名称；如果限定标识符`X::allocator_type`是有效的且表示一个类型，`A`表示`X::allocator_type`，如果不，`A`表示`allocator<T>`；`i`和`j`
+表示满足输入迭代器要求的迭代器且指向可隐式转换为`value_type`的元素；`[i, j)`表示一个有效的区间；`il`指定一个类型`initializer_list<value_type>`的对象；`n`表示类型`X::size_type`的一个值；`p`表示`a`的一个有效常量迭代器；`q`表示`a`的一个有效可解引用常量迭代器；`[q1, q2)`表示`a`中常量迭代器的一个有效区间；`t`表示`X::value_type`的一个左值或常量右值；`rv`表示`X::value_type`的一个非常量右值。`Args`表示一个模板参数包；`args`表示一个有`Args&&`模式的函数参数包。
+- ^4^ 表达式的复杂度是与序列相关的。
+
+###### 表87——序列容器要求（额外容器要求） {#t87 .table-title}
+| 表达式 | 返回类型 | 断言/说明 !!! 前置/后置条件 |
+|------|------|------|
+| `X(n, t)` !!! `X u(n, t);` | | *要求：*`T`到`X`中应`CopyInsertable`。 !!! *后置条件：*`distance(begin(), end()) == n` !!! 用`t`的`n`份副本构造一个序列容器 |
+| `X(i, j)` !!! `X u(i, j);` | | *要求：*`T`从`*i`到`X`中应`EmplaceConstructible`。对于`vector`，如果迭代器不满足前向迭代器要求（[27.2.5](c27#s2.5)），`T`到`X`中也应`MoveInsertable`。在区间`[i, j)`中的每个迭代器应恰好被解引用一次。 !!! *后置条件：*`distance(begin(), end()) == distance(i, j)` !!! 构造一个与区间`[i, j)`相等的序列容器 |
+| `X(il)` | | 相当于`X(il.begin(), il.end())` |
+| `a = il` | `X&` | *要求：*`T`到`X`中`CopyInsertable`且`CopyAssignable`。 !!! 将区间`[il.begin(), il.end())`赋值给`a`。`a`的所有存在元素被赋值或销毁。 !!! *返回：*`*this`。 |
+| `a.emplace(p, args)` | `iterator` | *要求：*`T`从`args`到`X`中`EmplaceConstructible`。对于`vector`和`deque`，`T`到`X`中也`MoveInsertable`且` MoveAssignable`。 !!! *效果：*在`p`前插入一个用`std::forward<Args>(args)...`构造的`T`类型对象。 |
+| `a.insert(p, t)` | `iterator` | *要求：*`T`到`X`中应`CopyInsertable`。对于`vector`和`deque`，`T`也应`CopyAssignable`。 !!! *效果：*在`p`前插入一份`t`的副本。 |
+| `a.insert(p, rv)` | `iterator` | *要求：*`T`到`X`中应`MoveInsertable`。对于`vector`和`deque`，`T`也应`MoveAssignable`。 !!! *效果：*在`p`前插入一份`rv`的副本。 |
+| `a.insert(p, n, t)` | `iterator` | *要求：*`T`到`X`中应`CopyInsertable`且`CopyAssignable`。 !!! 在`p`前插入`t`的`n`份副本 |
+| `a.insert(p, i, j)` | `iterator` | *要求：*`T`从`*i`到`X`中应`EmplaceConstructible`。对于`vector`和`deque`，`T`到`X`中也应`MoveConstructible`、`MoveAssignable`且可交换（[20.5.3.2](c20#s5.3.2)）。在区间`[i, j)`中的每个迭代器应恰好被解引用一次。 !!! *要求：*`i`和`j`不是`a`中的迭代器。 !!! 在`p`前插入`[i, j)`中元素的副本 |
+| `a.insert(p, il)` | `iterator` | `a.insert(p, il.begin(), il.end())`。 |
+| `a.erase(q)` | `iterator` | *要求：*对于`vector`和`deque`，`T`应`MoveAssignable`。 !!! *效果：*删除`q`指向的元素。 |
+| `a.erase(q1, q2)` | `iterator` | *要求：*对于`vector`和`deque`，`T`应`MoveAssignable`。 !!! *效果：*删除区间`[q1, q2)`中的元素。 |
+| `a.clear()` | `void` | 销毁`a`中的所有元素。使指向`a`的元素的所有引用、指针和迭代器失效，且可能使逾尾迭代器失效。 !!! *后置条件：*`a.empty()`返回`true`。 !!! *复杂度：*线性。 |
+| `a.assign(i, j)` | `void` | *要求：*`T`从`*i`到`X`中应`EmplaceConstructible`。对于`vector`，如果迭代器不满足前向迭代器要求（[27.2.5](c27#s2.5)），`T`到`X`中也应`MoveInsertable`。在区间`[i, j)`中的每个迭代器应恰好被解引用一次。 !!! *要求：*`i`和`j`不是`a`中的迭代器。 !!! 用`[i, j)`的一份副本替换`a`中元素。使指向`a`的元素的所有引用、指针和迭代器失效。对于`vector`和`deque`，也使逾尾迭代器失效。 |
+| `a.assign(il)` | `void` | `a.assign(il.begin(), il.end())`。 |
+| `a.assign(n, t)` | `void` | *要求：*`T`到`X`中应`CopyInsertable`且`CopyAssignable`。 !!! *要求：*`T`不是`a`中的引用。 !!! 用`t`的`n`份副本替换`a`中元素。对于`vector`和`deque`，也使逾尾迭代器失效。|
+
+- ^5^ `a.insert(p, t)`返回的迭代器指向插入到`a`中的`t`的副本。
+- ^6^ `a.insert(p, rv)`返回的迭代器指向插入到`a`中的`rv`的副本。
+- ^7^ `a.insert(p, n, t)`返回的迭代器指向插入到`a`中的第一个元素的副本；或如果`n == 0`，则为`p`。
+- ^8^ `a.insert(p, i, j)`返回的迭代器指向插入到`a`中的第一个元素的副本；或如果`i == j`，则为`p`。
+- ^9^ `a.insert(p, il)`返回的迭代器指向插入到`a`中的第一个元素的副本；或如果`il`为空，则为`p`。
+- ^10^ `a.emplace(p, args)`返回的迭代器指向从`args`到`a`中构造的新元素。
+- ^11^ `a.erase(q)`返回的迭代器指向在元素被删除之前紧跟在`q`后面的元素。如果不存在这样的元素，则返回`a.end()`。
+- ^12^ `a.erase(q1, q2)`返回的迭代器指向在任何元素被删除之前`q2`指向的元素。如果不存在这样的元素，则返回`a.end()`。
+- ^13^ 对于每一个在本章和第[24](c24)章中定义的序列容器：
+- - ^(13.1)^ 如果构造函数
+```cpp
+template <class InputIterator>
+  X(InputIterator first, InputIterator last,
+    const allocator_type& alloc = allocator_type());
+```
+- - 被用一个不符合输入迭代器的要求的`InputIterator`类型调用，那么构造函数将不参与重载解决方案。
+- - ^(13.2)^ 如果有下列形式的成员函数：
+```cpp
+template<class InputIterator>
+  返回类型 F(const_iterator p,
+             InputIterator first, InputIterator last); // 例如insert
+
+template <class InputIterator>
+  返回类型 F(InputIterator first, InputIterator last); // 例如append、assign
+
+template <class InputIterator>
+  返回类型 F(const_iterator i1, const_iterator i2,
+             InputIterator first, InputIterator last); // 例如replace
+```
+- - 被用一个不符合输入迭代器的要求的`InputIterator`类型调用，那么这些函数将不参与重载解决方案。
+- - ^(13.3)^ 序列容器的推导器将不参与重载解决方案，如果它有一个`InputIterator`模板参数和为参数推导出的一个不符合输入迭代器的要求的类型，或它有一个`Allocator`模板参数和为参数推导出的一个不符合分配器的要求的类型。
+- ^14^ 表[88](#t88)列出了为某些类型的序列容器而不是其他类型提供的操作。实现应为“容器”列中所示的所有容器类型提供这些操作，并应以均摊的常量时间执行这些操作。
+
+###### 表88——可选序列容器操作 {#t88 .table-title}
+| 表达式 | 返回类型 | 操作语义 | 容器 |
+|------|------|------|------|
+| `a.front()` | `reference`；对常量`a`是`const_reference` | `*a.begin()` | `basic_string`、`array`、`deque`、`forward_list`、`list`、`vector` |
+| `a.back()` | `reference`；对常量`a`是`const_reference` | `{ auto tmp = a.end();` !!! `--tmp;` !!! `return *tmp; }` | `basic_string`、`array`、`deque`、`list`、`vector` |
+| `a.emplace_front(args)` | `reference` | 在前端加入用`std::forward<Args>(args)...`构造的`T`类型对象。 !!! *要求：*`T`从`args`到`X`中应`EmplaceConstructible`。 !!! *返回：*`a.front()`。 | `deque`、`forward_list`、`list` |
+| `a.emplace_back(args)` | `reference` | 在后端加入用`std::forward<Args>(args)...`构造的`T`类型对象。 !!! *要求：*`T`从`args`到`X`中应`EmplaceConstructible`。对于`vector`，`T`到`X`中也应`MoveInsertable`。 !!! *返回：*`a.back()`。 | `deque`、`list`、`vector` |
+| `a.push_front(t)` | `void` | 在前端加入`t`的一份副本。 !!! *要求：*`T`到`X`中应`CopyInsertable`。 | `deque`、`forward_list`、`list` |
+| `a.push_front(rv)` | `void` | 在前端加入`rv`的一份副本。 !!! *要求：*`T`到`X`中应`MoveInsertable`。 | `deque`、`forward_list`、`list` |
+| `a.push_back(t)` | `void` | 在后端加入`t`的一份副本。 !!! *要求：*`T`到`X`中应`CopyInsertable`。 | `basic_string`、`deque`、`list`、`vector` |
+| `a.push_back(rv)` | `void` | 在后端加入`rv`的一份副本。 !!! *要求：*`T`到`X`中应`MoveInsertable`。 | `basic_string`、`deque`、`list`、`vector` |
+| `a.pop_front()` | `void` | 销毁首元素。 !!! *要求：*`a.empty()`应为`false`。 | `deque`、`forward_list`、`list` |
+| `a.pop_back()` | `void` | 销毁末元素。 !!! *要求：*`a.empty()`应为`false`。 | `basic_string`、`deque`、`list`、`vector` |
+| `a[n]` | `reference`；对常量`a`是`const_reference` | `*(a.begin() + n)` | `basic_string`、`array`、`deque`、`vector` |
+| `a.at(n)` | `reference`；对常量`a`是`const_reference` | `*(a.begin() + n)` | `basic_string`、`array`、`deque`、`vector` |
+
+- ^15^ 成员函数`at()`提供对容器元素的边界检查访问。若`n >= a.size()`，`at()`抛出`out_of_range`。
+
+### 26.2.4 节点句柄 {#s2.4}
+#### 26.2.4.1 `node_handle`概览 {#s2.4.1}
+- ^1^ 一个*节点句柄*是一个接受来自关联容器（[26.2.6](#s2.6)）或无序关联容器（[26.2.7](#s2.7)）的单个元素的所有权的对象。它可以用来将所有权转移到具有兼容节点的另一个容器中。具有兼容节点的容器具有相同的节点句柄类型。元素可以在表[89](#t89)的同一行中的容器类型之间在任一方向上传送。
+- ^2^ 如果节点句柄不是空的，那么它包含一个分配器，该分配器等于提取元素时容器的分配器。如果节点句柄为空，则不包含分配器。
+
+###### 表89——具有兼容节点的容器 {#t89 .table-title}
+|||
+|-|-|
+|`map<K, T, C1, A>`|`map<K, T, C2, A>`|
+|`map<K, T, C1, A>`|`multimap<K, T, C2, A>`|
+|`set<K, C1, A>`|`set<K, C2, A>`|
+|`set<K, C1, A>`|`multiset<K, C2, A>`|
+|`unordered_map<K, T, H1, E1, A>`|`unordered_map<K, T, H2, E2, A>`|
+|`unordered_map<K, T, H1, E1, A>`|`unordered_multimap<K, T, H2, E2, A>`|
+|`unordered_set<K, H1, E1, A>`|`unordered_set<K, H2, E2, A>`|
+|`unordered_set<K, H1, E1, A>`|`unordered_multiset<K, H2, E2, A>`|
+
+- ^3^ `node_handle`句柄仅用于说明。允许实现提供等效的功能，而不提供具有此名称的类。
+- ^4^ 如果一个`pair`的用户定义特化存在于`pair<const Key, T>`或`pair<Key, T>`，其中`Key`是容器的`key_type`，`T`是容器的`mapped_type`，则涉及节点句柄的操作行为是未定义的。
+```cpp
+template<未指定>
+	class node_handle {
+	public:
+		// 这些类型声明在表90和表91中描述。
+		using value_type = 见下; // 映射容器不存在
+		using key_type = 见下; // 集合容器不存在
+		using mapped_type = 见下; // 集合容器不存在
+		using allocator_type = 见下;
+
+	private:
+		using container_node_type = 未指定;
+		using ator_traits = allocator_traits<allocator_type>;
+
+		typename ator_traits::rebind_traits<container_node_type>::pointer ptr_;
+		optional<allocator_type> alloc_;
+
+	public:
+		constexpr node_handle() noexcept : ptr_(), alloc_() {}
+		~node_handle();
+		node_handle(node_handle&&) noexcept;
+		node_handle& operator=(node_handle&&);
+
+		value_type& value() const; // 映射容器不存在
+		key_type& key() const; // 集合容器不存在
+		mapped_type& mapped() const; // 集合容器不存在
+
+		allocator_type get_allocator() const;
+		explicit operator bool() const noexcept;
+		bool empty() const noexcept;
+
+		void swap(node_handle&)
+			noexcept(ator_traits::propagate_on_container_swap::value ||
+			ator_traits::is_always_equal::value);
+
+		friend void swap(node_handle& x, node_handle& y) noexcept(noexcept(x.swap(y))) {
+			x.swap(y);
+		}
+	};
+```
+
+#### 26.2.4.2 *`node_handle`* 构造函数、复制和赋值 {#s2.4.2}
+```cpp
+node_handle(node_handle&& nh) noexcept;
+```
+- ^1^ *效果：* 构造一个使用`nh.ptr_`初始化`ptr_`的`node_handle`。使用`nh.alloc_`移动构造`alloc_ `。赋值`nh.ptr_`为`nullptr`，赋值`nh.alloc_`为`nullopt`。
+```cpp
+node_handle& operator=(node_handle&& nh);
+```
+- ^2^ *要求：*`!alloc_`或`ator_traits::propagate_on_container_move_assignment`为`true`，或`alloc_ == nh.alloc_`。
+- ^3^ *效果：*
+- - ^(3.1)^ ——如果`ptr_ != nullptr`，通过调用`ator_traits::destroy`销毁`ptr_`指向的`container_node_type`对象中的`value_type`子对象，然后通过调用`ator_traits::rebind_traits<container_node_type>::deallocate`释放`ptr_`。
+- - ^(3.2)^ ——赋值`ptr_`为`nh.ptr_ `。如果`!alloc_`或`ator_traits::propagate_on_container_move_assignment`为`true`，移动赋值`alloc_`为`nh.alloc_`。
+- - ^(3.3)^ ——赋值`nh.ptr_`为`nullptr`，赋值`nh.alloc_`为`nullopt`。
+- ^4^ *返回：*`*this`。
+- ^5^ *抛出：* 无。
+
+#### 26.2.4.3 *`node_handle`* 析构函数 {#s2.4.3}
+```cpp
+~node_handle();
+```
+- ^1^ *效果：* 如果`ptr_ != nullptr`，通过调用`ator_traits::destroy`销毁`ptr_`指向的`container_node_type`对象中的`value_type`子对象，然后通过调用`ator_traits::rebind_traits<container_node_type>::deallocate`释放`ptr_`。
+
+#### 26.2.4.4 *`node_handle`* 观察器 {#s2.4.4}
+```cpp
+value_type& value() const;
+```
+- ^1^ *要求：*`empty() == false`。
+- ^2^ *返回：*`ptr_`指向的`container_node_type`对象中的`value_type`子对象的一个引用。
+- ^3^ *抛出：* 无。
+```cpp
+key_type& key() const;
+```
+- ^4^ *要求：*`empty() == false`。
+- ^5^ *返回：*`ptr_`指向的`container_node_type`对象中的`value_type`子对象的`key_type`成员的一个非常量引用。
+- ^6^ *抛出：* 无。
+- ^7^ *备注：* 允许通过返回的引用修改键。
+```cpp
+mapped_type& mapped() const;
+```
+- ^8^ *要求：*`empty() == false`。
+- ^9^ *返回：*`ptr_`指向的`container_node_type`对象中的`value_type`子对象的`mapped_type`成员的一个引用。
+- ^10^ *抛出：* 无。
+```cpp
+allocator_type get_allocator() const;
+```
+- ^11^ *要求：*`empty() == false`。
+- ^12^ *返回：*`*alloc_`。
+- ^13^ *抛出：* 无。
+```cpp
+explicit operator bool() const noexcept;
+```
+- ^14^ *返回：*`ptr_ != nullptr`。
+```cpp
+bool empty() const noexcept;
+```
+- ^15^ *返回：*`ptr_ == nullptr`。
+
+#### 26.2.4.5 *`node_handle`* 修改器 {#s2.4.5}
+```cpp
+void swap(node_handle& nh)
+  noexcept(ator_traits::propagate_on_container_swap::value ||
+           ator_traits::is_always_equal::value);
+```
+- ^1^ *要求：*`!alloc_`，或`!nh.alloc_`，或`ator_traits::propagate_on_container_swap`为`true`，或`alloc_ == nh.alloc_`。
+- ^2^ *效果：* 调用`swap(ptr_, nh.ptr_)`。如果`!alloc_`，或`!nh.alloc_`，或`ator_traits::propagate_on_container_swap`为`true`，调用`swap(alloc_, nh.alloc_)`。
+
+### 26.2.5 插入返回类型 {#s2.5}
+- ^1^ 具有唯一键的关联容器和具有唯一键的无序容器具有一个成员函数`insert`，它返回嵌套类型`insert_return_type`。此返回类型是本节中指定的类型的特化。
+```cpp
+template <class Iterator, class NodeType>
+struct INSERT_RETURN_TYPE
+{
+	Iterator position;
+	bool inserted;
+	NodeType node;
+};
+```
+- ^2^ 名称`INSERT_RETURN_TYPE`仅用作说明。`INSERT_RETURN_TYPE`具有上面指定的模板参数、数据成员和特殊成员。它没有指定的基类或成员。
+
+### 26.2.6 关联容器 {#s2.6}
+- ^1^ 关联容器提供基于键的数据快速检索。库中提供了四种基本的关联容器：`set`、`multiset`、`map`和`multimap`。
+- ^2^ 每个关联容器在`Key`和在`Key`的元素上引起一个严格弱序（[28.7](c28#s7)）的排序关系`Compare`上被参数化。此外，`map`和`multimap`用`Key`关联了一个任意*映射类型*`T`。`Compare`类型的对象称为容器的*比较对象*。
+- ^3^ “等价键”一词指的是比较所带来的等价关系，*不* 是键上的`operator==`。也就是说，`k1`和`k2`两个键，如果对于比较对象`comp`，`comp(k1, k2) == false && comp(k2, k1) == false`，则考虑为等价的。对于同一容器中的`k1`和`k2`两个键，调用`comp(k1, k2)`总应返回相同的值。
+- ^4^ 如果每个键最多包含一个元素，关联容器支持 *唯一键*。否则，它支持 *等价键*。`set`和`map`类支持唯一键；`multiset`和`multimap`类支持等价键。对于`multiset`和`multimap`，`insert`、`emplace`和`erase`保持等价元素的相对顺序。
+- ^5^ 对于`set`和`multiset`，值类型与键类型相同。对于`map`和`multimap`，它等于`pair<const Key, T>`。
+- ^6^ 一个关联容器的`iterator`属于双向迭代器类别。对于值类型与键类型相同的关联容器，`iterator`和`const_iterator`都是常量迭代器。`iterator`和`const_iterator`是否是相同类型是不明确的。【*注：* 在这种情况下，`iterator`和`const_iterator`具有相同的语义，且迭代器可转换为常量迭代器。用户可以通过在函数参数列表中总使用`const_iterator`来避免违反一个定义原则。*——注结束*】
+- ^7^ 关联容器满足分配器可感容器（[26.2.1](#s2.1)）的所有要求，除了对于`map`和`multimap`在表[83](#t83)中对于`value_type`的要求以`key_type`和`mapped_type`替代。【*注：* 例如，在某些情况中`key_type`和`mapped_type`要求`CopyAssignable`，即使相关的`value_type`、`pair<const key_type, mapped_type>`并非`CopyAssignable`。*——注结束*】
+- ^8^ 在表[90](#t90)中，`X`表示一个关联容器类；`a`表示一个`X`类型的值；`a2`表示具有与`X`类型兼容的节点的类型的值（表[89](#t89)）；`b`表示一个`X`类型的可能为`const`的值；`u`表示正被声明的变量的名称；当`X`支持唯一键时，`a_uniq`表示一个`X`类型的值；当`X`支持多重键时，`a_eq`表示一个`X`类型的值；当限定标识符`X::key_compare::is_transparent`有效且表示一个类型（[17.8.2](c17#s8.2)）时，`a_tran`表示一个`X`类型的可能为`const`的值；`i`和`j`满足输入迭代器要求且指向可隐式转换为`value_type`的元素；`[i, j)`表示一个合法区间；`p`表示`a`的一个合法常量迭代器；`q`表示`a`的一个可解引用的合法常量迭代器；`r`表示`a`的一个可解引用的合法迭代器；`[q1, q2)`表示`a`中常量迭代器的一个合法区间；`il`指定一个`initializer_list<value_type>`类型的对象；`t`表示类型`X::value_type`的一个值；`k`表示类型`X::key_type`的一个值，`c`表示`X::key_compare`类型的一个可能为`const`的值；`kl`是一个关于`c(r, kl)`使`a`被划分（[28.7](c28#s7)）的值，其中`r`是`e`的键值且`e`在`a`中；`ku`是一个关于`!c(ku, r)`使`a`被划分（[28.7](c28#s7)）的值；`ke`是一个关于`c(r, ke)`和`!c(ke, r)`使`a`被划分（[28.7](c28#s7)）的值，其中`c(r, ke)`暗指`!c(ke, r)`。如果有，`A`表示`X`使用的存储分配器，否则为`allocator<X::value_type>`；`m`表示一个可转换为`A`的类型的分配器；`nh`表示`X::node_type`类型的一个非常量右值。
+
+###### 表90——关联容器要求（额外容器要求） {#t90 .table-title}
+| 表达式 | 返回类型 | 断言/说明 !!! 前置/后置条件 | 复杂度 |
+|------|------|------|------|
+| `X::key_type` | `Key` | | 编译时 |
+| `X::mapped_type`（只有`map`和`multimap`） | `T` | | 编译时 |
+| `X::value_type`（只有`set`和`multiset`） | `Key` | *要求：*`value_type`从`X`中是`Erasable` | 编译时 |
+| `X::value_type`（只有`map`和`multimap`） | `pair<const Key, T>` | *要求：*`value_type`从`X`中是`Erasable` | 编译时 |
+| `X::key_compare` | `Compare` | *要求：*`key_compare`是`CopyConstructible` | 编译时 |
+| `X::value_compare` | 二元谓词类型 | 对于`set`和`multiset`，与`key_compare`相同；对于`map`和`multimap`，是由一对中第一分量（即`Key`）引起的顺序关系 | 编译时 |
+| `X::node_type` | *`node_handle`* 类模板的特化，使得公共嵌套类型与`X`中的对应类型相同。 | 见[26.2.4](#s2.4) | 编译时 |
+| `X(c)` !!! `X u(c);` | | *效果：* 构造一个空容器。使用`c`的副本作为比较对象。 | 常量 |
+| `X()` !!! `X u;` | | *要求：*`key_compare`是`DefaultConstructible`。 !!! *效果：* 构造一个空容器。使用`Compare()`作为比较对象。 | 常量 |
+| `X(i,j,c)` !!! `X u(i,j,c);` | | *要求：*`value_type`从`*i`到`X`中是`EmplaceConstructible`。 !!! *效果：* 构造一个空容器，向其中插入范围`[i, j)`中的元素；使用`c`作为比较对象。 | 通常为*N* log *N*，其中*N*有值`distance(i, j)`；若`[i, j)`被用`value_comp()`排序则为线性 |
+| `X(i,j)` !!! `X u(i,j);` | | *要求：*`key_compare`是`DefaultConstructible`。`value_type`从`*i`到`X`中是`EmplaceConstructible`。 !!! *效果：* 同上，但使用`Compare()`作为比较对象 | 同上 |
+| `X(il)` | | 和`X(il.begin(), il.end())`相同 | 和`X(il.begin(), il.end())`相同 |
+| `X(il,c)` | | 和`X(il.begin(), il.end(), c)`相同 | 和`X(il.begin(), il.end(), c)`相同 |
+| `a = il` | `X&` | *要求：*`value_type`到`X`中是`CopyInsertable`且`CopyAssignable`。 !!! *效果：* 赋值区间`[il.begin(), il.end())`到`a`中。`a`的所有存在元素被赋值或销毁。 | 通常为*N* log *N*，其中*N*有值`il.size() + a.size()`；若`[il.begin(), il.end())`被用`value_comp()`排序则为线性 |
+| `b.key_comp()` | `X::key_compare` | 返回构造`b`的比较对象。 | 常量 |
+| `b.value_comp()` | `X::value_compare` | 返回由比较对象构造的`value_compare`对象 | 常量 |
+| `a_uniq.emplace(args)` | `pair<iterator, bool>` | *要求：*`value_type`从`args`到`a`中应是`EmplaceConstructible`。 !!! *效果：* 插入由`std::forward<Args>(args)...`构造的`value_type`对象`t`，如果且仅如果容器中没有元素有和`t`键等价的键。返回的元对的`bool`成员是`true`，如果且仅如果本次插入发生；且元对的`iterator`成员指向有和`t`键等价的键的元素。 | 对数 |
+| `a_eq.emplace(args)` | `iterator` | *要求：*`value_type`从`args`到`a`中应是`EmplaceConstructible`。 !!! *效果：* 插入由`std::forward<Args>(args)...`构造的`value_type`对象`t`，返回指向新插入元素的迭代器。如果一个区间包含和`t`等价的元素存在于`a_eq`中，`t`被插入到那个区间的末尾。 | 对数 |
+| `a.emplace_hint(p, args)` | `iterator` | 等价于`a.emplace(std::forward<Args>(args)...)`。返回值是一个指向有和新插入元素等价键的元素的迭代器。该元素尽可能地插入到`p`之前的位置。 | 通常为对数，但如果元素在`p`前插入，则为均摊常量 |
+| `a_uniq.insert(t)` | `pair<iterator, bool>` | *要求：* 如果`t`是一个非常量右值表达式，`value_type`到`X`中应`MoveInsertable`；否则，`value_type`到`X`中应`CopyInsertable`。 !!! *效果：* 插入`t`，如果且仅如果容器中没有元素有和`t`的键相等的等价键。返回的元对的`bool`成员是`true`，如果且仅如果本次插入发生；且元对的`iterator`成员指向有和`t`键等价的键的元素。 | 对数 |
+| `a_eq.insert(t)` | `iterator` | *要求：* 如果`t`是一个非常量右值表达式，`value_type`到`X`中应`MoveInsertable`；否则，`value_type`到`X`中应`CopyInsertable`。 !!! *效果：* 插入`t`，返回指向新插入元素的迭代器。如果一个区间包含和`t`等价的元素存在于`a_eq`中，`t`被插入到那个区间的末尾。 | 对数 |
+| `a.insert(p, t)` | `iterator` | *要求：* 如果`t`是一个非常量右值表达式，`value_type`到`X`中应`MoveInsertable`；否则，`value_type`到`X`中应`CopyInsertable`。 !!! *效果：* 插入`t`，如果且仅如果在唯一键容器中没有和`t`的键等价键的元素；总在等价键容器中插入`t`。总返回指向和`t`的键有等价键的新插入元素的迭代器。`t`的插入尽可能接近`p`之前的位置。 | 通常为对数，但如果元素在`p`前插入，则为均摊常量 |
+| `a.insert(i, j)` | `void` | *要求：*`value_type`从`*i`到`X`中应`EmplaceConstructible`。 !!! *要求：*`i`、`j`不是`a`中的迭代器。插入区间`[i, j)`中的每一个元素，如果且仅如果在唯一键容器中和`t`的键没有等价键的元素；总在等价键容器中插入元素。 | *N* log(`a.size()` + *N*)，其中*N*有值`distance(i, j)` |
+| `a.insert(il)` | `void` | 等价于`a.insert(il.begin(), il.end())` | |
+| `a_uniq.insert(nh)` | `insert_return_type` | *要求：*`nh`为空或`a_uniq.get_allocator() == nh.get_allocator()`。 !!! *效果：* 如果`nh`为空，没有效果。否则，插入`nh`拥有的元素，如果且仅如果容器中没有和`nh.key()`等价的键。 !!! *后置条件：* 如果`nh`为空，则`inserted`为`false`，`position`为`end()`，`node`为空。否则如果插入发生，`inserted`为`true`，`position`指向插入的元素，`node`为空；如果插入失败，`inserted`为`false`，`node`有`nh`先前的值，`position`指向有和`nh.key()`等价键的元素。 | 对数 |
+| `a_eq.insert(nh)` | `iterator` | *要求：*`nh`为空或`a_uniq.get_allocator() == nh.get_allocator()`。 !!! *效果：* 如果`nh`为空，没有效果且返回`a_eq.end()`。否则，插入`nh`拥有的元素，返回指向新插入元素的迭代器。如果一个区间包含和`nh.key()`等价键的元素出现在`a_eq`中，元素插入到区间的末尾。 !!! *后置条件：*`nh`为空。 | 对数 |
+| `a.insert(p, nh)` | `iterator` | *要求：*`nh`为空或`a_uniq.get_allocator() == nh.get_allocator()`。 !!! *效果：* 如果`nh`为空，没有效果且返回`a_eq.end()`。否则，插入`nh`拥有的元素，如果且仅如果在唯一键容器中没有和`nh.key()`等价键的元素；在等价键容器中总插入`nh`拥有的元素。总返回指向有和`nh.key()`等价键的元素的迭代器。元素的插入尽可能接近`p`之前的位置。 !!! *后置条件：* 如果插入成功，`nh`为空；如果插入失败，不变。 | 通常为对数，但如果元素在`p`前插入，则为均摊常量 |
+| `a.extract(k)` | `node_type` | 删除容器中和`k`有等价键的首元素。如果找到，返回拥有元素的`node_type`；否则为空的`node_type`。 | log(`a.size()`) |
+| `a.extract(q)` | `node_type` | 删除`q`指向的元素。返回拥有此元素的`node_type`。 | 均摊常量 |
+| `a.merge(a2)` | `void` | *要求：*`a.get_allocator() == a2.get_allocator()`。 !!! 尝试在`a2`中提取每个元素，并使用`a`的比较对象将其插入到`a`中。在唯一键容器中，如果`a`有元素和`a2`的元素有等价键，则此元素不从`a2`中提取。 !!! *后置条件：* 指向`a2`的传递元素的指针和引用指向那些相同的元素，但作为`a`的成员。引用传递元素的迭代器将继续引用它们的元素，但它们现在作为`a`中的迭代器，而不是`a2`中的。 !!! *抛出：* 无，除非比较对象抛出。 | *N* log(`a.size()`+*N*)，其中*N*有值`a2.size()`。 |
+| `a.erase(k)` | `size_type` | 删除容器中和`k`有等价键的所有元素。返回删除元素个数。 | log(`a.size()`) + `a.count(k)` |
+| `a.erase(q)` | `iterator` | 删除`q`指向的元素。返回一个迭代器，指向元素在被擦除之前紧跟`q`之后的元素。如果没有这种元素存在，返回`a.end()`。 | 均摊常量 |
+| `a.erase(r)` | `iterator` | 删除`r`指向的元素。返回一个迭代器，指向元素在被擦除之前紧跟`r`之后的元素。如果没有这种元素存在，返回`a.end()`。 | 均摊常量 |
+| `a.erase(q1, q2)` | `iterator` | 删除区间`[q1, q2)`中的所有元素。返回一个迭代器，指向在任何元素被删除之前由`q2`指向的元素。如果没有这种元素存在，返回`a.end()`。 | log(`a.size()`) + *N*，其中*N*有值`distance(q1, q2)` |
+| `a.clear()` | `void` | `a.erase(a.begin(),a.end())` !!! *后置条件：*`a.empty()`返回`true`。 | 线性`a.size()` |
+| `b.find(k)` | `iterator`；对于常量`b`是`const_iterator` | 返回指向和`k`有等价键的元素的迭代器；或`b.end()`，如果元素未找到 | 对数 |
+| `a_tran.find(ke)` | `iterator`；对于常量`a_tran`是`const_iterator` | 返回指向有键`r`的元素的迭代器，其中`!c(r, ke) && !c(ke, r)`；或`a_tran.end()`，如果元素未找到 | 对数 |
+| `b.count(k)` | `size_type` | 返回和`k`有等价键的元素个数 | log(`b.size()`) + `b.count(k)` |
+| `a_tran.count(ke)` | `size_type` | 返回有键`r`的元素个数，其中`!c(r, ke) && !c(ke, r)` | log(`a_tran.size()`) + `a_tran.count(ke)` |
+| `b.lower_bound(k)` | `iterator`；对于常量`b`是`const_iterator` | 返回第一个指向元素键不小于`k`的迭代器；或`b.end()`，如果元素未找到 | 对数 |
+| `a_tran.lower_bound(kl)` | `iterator`；对于常量`a_tran`是`const_iterator` | 返回第一个指向元素键为`r`的迭代器，其中`!c(r, kl)`；或`a_tran.end()`，如果元素未找到 | 对数 |
+| `b.upper_bound(k)` | `iterator`；对于常量`b`是`const_iterator` | 返回第一个指向元素键大于`k`的迭代器；或`b.end()`，如果元素未找到 | 对数 |
+| `a_tran.upper_bound(kl)` | `iterator`；对于常量`a_tran`是`const_iterator` | 返回第一个指向元素键为`r`的迭代器，其中`c(r, kl)`；或`a_tran.end()`，如果元素未找到 | 对数 |
+| `b.equal_range(k)` | `pair<iterator, iterator>`；对于常量`b`是`pair<const_iterator, const_iterator>` | 等价于`make_pair(b.lower_bound(k), b.upper_bound(k))`。 | 对数 |
+| `a_tran.equal_range(ke)` | `pair<iterator, iterator>`；对于常量`a_tran`是`pair<const_iterator, const_iterator>` | 等价于`make_pair(a_tran.lower_bound(ke), a_tran.upper_bound(ke))`。 | 对数 |
+
+- ^9^ `insert`和`emplace`成员不应影响容器的迭代器和引用的有效性，`erase`成员应仅使被擦除的元素的迭代器和引用失效。
+- ^10^ `extract`成员仅使被删除元素的迭代器失效；被移除元素的指针和引用保持有效。然而，当元素由`node_type`所拥有时，通过此类指针和引用访问元素是未定义行为。如果元素成功插入，`node_type`拥有的获取元素的引用和指针失效。
+- ^11^ 关联容器迭代器的基本属性是它们以非降序的顺序迭代容器，而非降序是由用来构造它们的比较来定义的。对于任意两个可解引用迭代器`i`和`j`，使得从`i`到`j`的距离是正的，下面的条件成立：
+```cpp
+value_comp(*j, *i) == false
+```
+- ^12^ 对于具有唯一键的关联容器，更强的条件是：
+```cpp
+value_comp(*i, *j) != false
+```
+- ^13^ 当通过传递比较对象构造关联容器时，容器不应存储传递对象的指针或引用，即使该对象是通过引用传递的。当通过复制构造函数或赋值运算符复制关联容器时，目标容器应使用来自复制容器的比较对象，就像该比较对象在其构造函数中已被传递到目标容器。
+- ^14^ 成员函数模板`find`、`count`、`lower_bound`、`upper_bound`和`equal_range`不应参与重载方案，除非 *限定标识符* `Compare::is_transparent`有效且表示一个类型（[17.8.2](c17#s8.2)）。
+- ^15^ 关联容器的推导器不应参与重载方案，如果下列任何一项是正确的：
+- - ^(15.1)^ 它具有一个`InputIterator`模板参数，并且没有为该参数推导出一个符合输入迭代器的类型。
+- - ^(15.2)^ 它有一个`Allocator`模板参数，并且没有为该参数导出一个符合分配器的类型。
+- - ^(15.3)^ 它有一个`Compare`模板参数，并为该参数导出一个符合分配器的类型。
+
+#### 26.2.6.1 异常安全保证 {#s2.6.1}
+- ^1^ 对于关联容器，没有`clear()`函数抛出异常。`erase(k)`不会抛出异常，除非容器的比较对象引发该异常（如果有的话）。
+- ^2^ 对于关联容器，如果插入单个元素的`insert`或`emplace`函数中的任何操作抛出异常，则插入没有效果。
+- ^3^ 对于关联容器，没有`swap`函数抛出异常，除非容器的`Compare`对象的交换抛出异常（如果有的话）。
