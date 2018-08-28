@@ -5,6 +5,7 @@ It contains my blog and other useful resources.
 
 ## Blog
 Please visit https://polaris1949.github.io/blog/.
+- [ ] Split it into English and Chinese versions
 - [ ] TODO
 
 ## Tool
