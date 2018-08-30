@@ -1,36 +1,35 @@
+// Find clause destination.
 function dest_clause(clause)
 {
     var dest = "";
 
     if (is_numstr(clause))
-    {
-        dest += "c";
-        dest += clause;
-    }
+        dest += "c" + clause;
     else
     {
         dest += "a";
+
         if (clause.length > 1)
-            message("warning: only first character affected; remaining ignored [c=]");
+            warning("only first character affected; remaining ignored", "c");
+
         dest += clause[0].toLowerCase().charCodeAt() - 'a'.charCodeAt() + 1;
     }
 
     return dest;
 }
 
+// Find subclause destination.
 function dest_subclause(subclause)
 {
     var dest = "";
 
     if (!empty(subclause))
-    {
-        dest += "#s";
-        dest += subclause;
-    }
+        dest += "#s" + subclause;
 
     return dest;
 }
 
+// Jump action from search list.
 function jump()
 {
     var str = location.search;
@@ -40,69 +39,67 @@ function jump()
     var loc = "";
     var dest = "";
     var debug = false;
-    var tmp;
     str = str.substr(1);
+    var arr = str.split('&');
 
-    while (!empty(str))
+    for (var i = 0; i < arr.length; ++i)
     {
-        tmp = str.split('&');
-        var cur = tmp[0];
-        str = tmp[1];
-        tmp = cur.split('=');
+        var cur = arr[i];
+        var tmp = cur.split('=');
         var par = tmp[0];
         var arg = tmp[1];
 
         switch (par)
         {
             case "c": clause = arg; break;
-            case "d": debug = arg; break;
+            case "d": debug = boolstr(arg); break;
             case "g": lang = arg; break;
             case "l": loc = arg; break;
             case "s": subclause = arg; break;
-            default: message("warning: unknown option ignored [" + par + "=]"); break;
+            default: warning("unknown option ignored", par); break;
         }
     }
 
-    debug = boolstr(debug);
-
-    if (!empty(loc))
+    if (empty(dest) && !empty(loc))
     {
         if (!empty(clause) || !empty(subclause))
-            message("warning: redundant location; clause and subclause ignored [l=]");
+            warning("redundant location; clause and subclause ignored", "l");
 
-        tmp = loc.split('.');
+        var tmp = loc.split('.');
         clause = tmp[0];
         subclause = tmp[1];
 
         for (var i = 2; i < tmp.length; ++i)
-        {
-            subclause += ".";
-            subclause += tmp[i];
-        }
+            subclause += "." + tmp[i];
 
         dest += dest_clause(clause);
         dest += dest_subclause(subclause);
     }
-    else if (!empty(clause))
+
+    if (empty(dest) && !empty(clause))
     {
         dest += dest_clause(clause);
         dest += dest_subclause(subclause);
     }
-    else if (!empty(subclause))
-        message("error: clause not found but subclause found [s=]");
+
+    if (empty(dest) && !empty(subclause))
+        error("clause not found but subclause found", "s");
 
     if (!empty(dest))
+        dest = lang_check(dest, lang);
+    else
     {
         dest = lang_check(dest, lang);
-        message("note: jump to " + dest);
+        dest = "";
+    }
 
-        if (debug)
-        {
-            message("note: jump prohibited in debug mode [d=]");
-            message("note: bad language support in debug mode [d=]");
-        }
+    if (empty(dest))
+        fatal_error("no destination");
+    else
+    {
+        note("jump to " + dest);
+
+        if (debug) note("jump prohibited in debug mode", "d");
         else do_jump(dest);
     }
-    else
-        message("error: no destination");
 }
