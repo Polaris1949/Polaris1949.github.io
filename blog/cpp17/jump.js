@@ -41,6 +41,7 @@ function jump()
     var debug = false;
     str = str.substr(1);
     var arr = str.split('&');
+    if (empty(str)) arr = [];
 
     for (var i = 0; i < arr.length; ++i)
     {
