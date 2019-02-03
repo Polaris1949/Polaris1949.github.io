@@ -11,5 +11,5 @@ function jump()
 {
     var link = document.getElementById('link').value;
     while (link.length < 3) link = '0' + link;
-    location.href = 'player.html?' + link;
+    location.href = 'player?' + link;
 }
