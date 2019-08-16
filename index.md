@@ -1,6 +1,4 @@
-# Polaris1949's Home {#title}
-
-------------------------------------------------
+# Home
 
 - [Blog](blog/)
 - [Download](down/)
