@@ -21,6 +21,7 @@ switch_case(_Tp&& __switch, _Up&& __default, _Vp&&... __case);
 - *Returns*: A value or `void`, depending on invoked function.
 - *Throws*: Any exception thrown by invoked function.
 - *Remarks*: Compare old selective structure and invocation of this function in the example below:
+
 ```cpp
 std::size_t score;
 std::cin >> score;
