@@ -1,5 +1,5 @@
 # Home
 
 - [Blog](blog/)
-- [Download](down/)
-- [Tool](tool/)
+- [Download](download/)
+- [Wiki](wiki/)
