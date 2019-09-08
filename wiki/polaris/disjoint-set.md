@@ -35,7 +35,7 @@
 
 ## Header
 ```cpp
-#include <polaris/djset>
+#include <pol/djset>
 ```
 
 ## Class template `seq_djset`
@@ -178,7 +178,7 @@ using djset64 = seq_djset<uint64_t, uint64_t>;
 A solution using the library for [Luogu P3367](https://www.luogu.org/problem/P3367).
 ```cpp
 #include <iostream>
-#include <polaris/djset>
+#include <pol/djset>
 
 pol::djset u;
 

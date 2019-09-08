@@ -2,7 +2,7 @@
 
 ## Header
 ```cpp
-#include <polaris/chtholly_tree>
+#include <pol/chtholly_tree>
 ```
 
 ## Class template `chtholly_tree_node`
@@ -29,7 +29,7 @@ class chtholly_tree;
 ```cpp
 // Codeforces 896C
 #include <iostream>
-#include <polaris/chtholly_tree>
+#include <pol/chtholly_tree>
 
 using llong = long long;
 

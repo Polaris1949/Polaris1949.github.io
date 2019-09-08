@@ -6,8 +6,14 @@ This library provides facilities to substitute for old selective structures (i.e
 - Variadic templates (C++11)
 - Return type deduction for normal functions (C++14)
 - constexpr if (C++17)
+
 ### Polaris libraries
 - [Type traits library](Type-traits)
+
+## Header
+```cpp
+#include <pol/switch>
+```
 
 ## Functions
 ### `switch_case`

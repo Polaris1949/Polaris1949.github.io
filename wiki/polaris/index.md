@@ -5,6 +5,8 @@
 - Still in beta version. Impl & Wiki in flux.
 
 ## Library introduction
+- [Bit library](bit)
+- [Bit memory library](bit-memory)
 - [Bit observer library](bit-observer)
 - [Chtholly tree library](chtholly-tree)
 - [Disjoint set library](disjoint-set)
@@ -13,6 +15,7 @@
 - [Switch library](switch)
 - [Tree array library](tree-array)
 - [Type traits library](type-traits)
+- [Version library](version)
 
 ## About
 - Maintainer: Polaris1949

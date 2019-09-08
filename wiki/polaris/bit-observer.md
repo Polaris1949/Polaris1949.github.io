@@ -8,7 +8,7 @@
 
 ## Header
 ```cpp
-#include <polaris/bit_observer>
+#include <pol/bit_observer>
 ```
 
 ## Class `basic_bit_observer`
@@ -27,7 +27,7 @@ class bit_observer;
 ## Example
 Input a number of type `int` and output its bit distribution.
 ```cpp
-#include <polaris/bit_observer>
+#include <pol/bit_observer>
 #include <iostream>
 
 int main()

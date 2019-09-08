@@ -2,7 +2,7 @@
 
 ## Header
 ```cpp
-#include <polaris/segment_tree>
+#include <pol/segment_tree>
 ```
 
 ## Class template `segment_tree_node`
@@ -151,7 +151,7 @@ tree_type& modify(size_type begin, size_type end, const value_type& x,
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <polaris/segment_tree>
+#include <pol/segment_tree>
 
 using llong = long long;
 
