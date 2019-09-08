@@ -33,13 +33,13 @@ version() noexcept;
 
 int main()
 {
-	std::string header{__POL_VERSION};
-	std::string runtime{pol::version()};
+    std::string header{__POL_VERSION};
+    std::string runtime{pol::version()};
 
     if (header != runtime)
-	{
-	    std::cout << "bad library\n";
-		return 1;
-	}
+    {
+        std::cout << "bad library\n";
+        return 1;
+    }
 }
 ```
