@@ -1,4 +1,4 @@
-# Download
+# Resource
 
 ## My Cygwin64 builds
 - [binutils-2.32](https://pan.baidu.com/s/1dFrxsVEVfbIpkuDKI9iwTQ) (wpbw) [2019/09/15]
