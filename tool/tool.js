@@ -1,26 +1,29 @@
 function jump1()
 {
-    var link = document.getElementById('link').value;
-    while (link.length < 3) link = '0' + link;
-    location.href = 'http://res.17roco.qq.com/res/combat/previews/' + link + '-idle.swf';
+    jumpx(1, 'https://res.17roco.qq.com/res/combat/previews/', '-idle.swf');
 }
 
 function jump2()
 {
-    var link = document.getElementById('link').value;
-    while (link.length < 3) link = '0' + link;
-    location.href = 'http://res.17roco.qq.com/res/combat/spirits/' + link + '-.swf';
+    jumpx(1, 'https://res.17roco.qq.com/res/combat/spirits/', '-.swf');
 }
 
 function jump3()
 {
-    var link = document.getElementById('link').value;
-    while (link.length < 3) link = '0' + link;
-    location.href = 'http://res.17roco.qq.com/res/combat/icons/' + link + '-.png';
+    jumpx(0, 'https://res.17roco.qq.com/res/combat/icons/', '-.png');
 }
 
 function jump4()
 {
-    var link = document.getElementById('link').value;
-    location.href = 'http://res.17roco.qq.com/webapp/rocoBox/petIcon/' + link + '.png';
+    jumpx(0, 'https://res.17roco.qq.com/webapp/rocoBox/petIcon/', '.png');
+}
+
+function jumpx(t, pre, suf)
+{
+    var num = document.getElementById('num').value;
+    if (num !== '22')
+        while (num.length < 3) num = '0' + num;
+    if (document.getElementById('nsp').checked && (t == 1))
+        pre = "player?" + pre;
+    location.href = pre + num + suf;
 }
