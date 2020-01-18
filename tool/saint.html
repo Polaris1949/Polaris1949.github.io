@@ -1,0 +1,36 @@
+<html>
+<head>
+    <title>SS Game Tool | Polaris1949</title>
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<section class="main-content">
+<h1 id="title">SS Game Tool</h1>
+<hr/>
+<h2>Exp Calculator</h2>
+<p>
+    Exp:&nbsp;
+    <input id="exp" type="text" value="0" size="8" />
+    from Lv.&nbsp;
+    <input id="lvb" type="text" value="1" size="4" />
+    &nbsp;to Lv.&nbsp;
+    <input id="lve" type="text" value="80" size="4" />
+    ,&nbsp;
+    <input id="expl" type="text" value="0" size="8" />
+    &nbsp;left
+    <br/>
+    Lv. range from Lv.&nbsp;
+    <input id="lvmin" type="text" value="1" size="4" disabled />
+    &nbsp;to Lv.&nbsp;
+    <input id="lvmax" type="text" value="80" size="4" />
+</p>
+<p><ul>
+<li><input type="button" value="Calc Exp" onclick="exp_calc()" />: Input the beginning level and the end level, then output the exp needed.</li>
+<li><input type="button" value="Calc Lv." onclick="lv_calc()" />: Input the level range, the beginning level and the exp you have, then output the highest end level you can reach and the exp left.</li>
+</ul></p>
+</section>
+<script src="exp.js"></script>
+</body>
+</html>
