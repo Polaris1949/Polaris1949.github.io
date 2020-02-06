@@ -27,3 +27,11 @@ function jumpx(t, pre, suf)
         pre = "player?" + pre;
     location.href = pre + num + suf;
 }
+
+function autocheck()
+{
+    if (navigator.userAgent.indexOf('Edge') > -1)
+        return;
+    if (navigator.userAgent.indexOf('Chrome') > -1)
+        document.getElementById('nsp').checked = "checked";
+}
