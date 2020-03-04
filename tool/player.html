@@ -8,7 +8,12 @@
 <body>
 <div id="player">
 </div>
-<script src="flash.js"></script>
-<script>play();</script>
+<script>
+var str = location.search;
+var obj = '<object type="application/x-shockwave-flash" data="." width="100%" height="100%" />';
+str = str.substr(1);
+obj = obj.replace('.', str);
+document.getElementById('player').innerHTML += obj;
+</script>
 </body>
 </html>
