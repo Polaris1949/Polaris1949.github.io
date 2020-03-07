@@ -24,7 +24,7 @@ function jumpx(t, pre, suf)
     if (num !== '22')
         while (num.length < 3) num = '0' + num;
     if (document.getElementById('nsp').checked && (t == 1))
-        pre = "player?" + pre;
+        pre = "../player?" + pre;
     location.href = pre + num + suf;
 }
 

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Microcosm Search | Polaris1949</title>
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<section class="main-content">
+<h1 id="title">Microcosm Search</h1>
+<hr/>
+<p>
+KindID:&nbsp;<input id="kid" type="text" value="100" size="8" />&nbsp;
+Name:&nbsp;<input id="name" type="text" size="16" />&nbsp;
+<input id="autodesc" type="checkbox" checked="checked" />
+<label for="autodesc">Auto Desc</label>
+&nbsp;<button onclick="mfind()">Search</button>
+&nbsp;<button onclick="mclear()">Clear</button><br/>
+Color:&nbsp;<span id="color">?</span><br/>
+Desc:&nbsp;<span id="desc">?</span><br/>
+LongDesc:&nbsp;<span id="longdesc">?</span><br/>
+ShopDesc:&nbsp;<span id="shopdesc">?</span>
+</p>
+</section>
+<script src="mdata.js"></script>
+<script>
+var a = JSON.parse(data);
+function mclear()
+{
+    var kid = document.getElementById("kid");
+    var name = document.getElementById("name");
+    kid.value = "";
+    name.value = "";
+}
+function mfind()
+{
+    var kid = document.getElementById("kid");
+    var name = document.getElementById("name");
+    var color = document.getElementById("color");
+    var desc = document.getElementById("desc");
+    var longdesc = document.getElementById("longdesc");
+    var shopdesc = document.getElementById("shopdesc");
+    var ok = false;
+    var method = 0;
+    if (kid.value.length > 0) method = 1;
+    else if (name.value.length > 0) method = 2;
+    else { alert("No input"); return; }
+    a.forEach(function(cur, index, arr)
+    {
+        if (!ok)
+        {
+            if (method == 1 && cur.KindID == kid.value)
+            { name.value = cur.Name; ok = true; }
+            if (method == 2 && cur.Name == name.value)
+            { kid.value = cur.KindID; ok = true; }
+            if (ok)
+            {
+                color.innerHTML = function(ctype)
+                {
+                    switch (ctype)
+                    {
+                        case 1: return "日相";
+                        case 2: return "月相";
+                        case 3: return "星相";
+                        case 4: return "传奇";
+                        default: return "未知";
+                    }
+                }(cur.ColorType);
+                desc.innerHTML = cur.Desc;
+                var autodesc = document.getElementById("autodesc").checked;
+                if ((autodesc && cur.ColorType == 4) || !autodesc)
+                    longdesc.innerHTML = cur.LongDesc;
+                else
+                    longdesc.innerHTML = "同下";
+                shopdesc.innerHTML = cur.ShopDesc;
+            }
+        }
+    });
+    if (!ok)
+    {
+        if (method == 1) name.value = "未找到";
+        else if (method == 2) kid.value = "未找到";
+        color.innerHTML = "?";
+        desc.innerHTML = "?";
+        longdesc.innerHTML = "?";
+        shopdesc.innerHTML = "?";
+    }
+}
+</script>
+</body>
+</html>

@@ -21,6 +21,7 @@
         var a = r.Ft;
         b.root = b.createTag("svg");
         b.root.id = "svg";
+        b.root.setAttribute("style", "z-index:0;");
         b.root.setAttribute("width", cw);
         b.root.setAttribute("height", ch);
         b.root.setAttribute("viewBox",
@@ -886,12 +887,17 @@
         }, b.interval);
         (function() {
             var a = document.createElement("button");
-            a.innerHTML = "Stop";
+            var nam = document.createElement("span");
+            nam.innerHTML = "Animation: ";
+            var con = document.createElement("span");
+            con.innerHTML = "Stop";
             a.id = "control";
-            a.setAttribute("style", "left: 10px; top: 10px; overflow: hidden; position: fixed; width: 100px; z-index: 999;");
+            a.setAttribute("style", "left: 10px; top: 10px; overflow: hidden; position: fixed; width: 200px; z-index: 999;");
+            a.appendChild(nam);
+            a.appendChild(con);
             document.body.appendChild(a);
             if (a) a.onclick = function() {
-                a.innerHTML == "Stop" ? (a.innerHTML = "Play", c.stop(), b.stop()) : (a.innerHTML = "Stop", c.start(), b.timer = setTimeout(function() {
+                con.innerHTML == "Stop" ? (con.innerHTML = "Play", c.stop(), b.stop()) : (con.innerHTML = "Stop", c.start(), b.timer = setTimeout(function() {
                     c.showFrame();
                     b.timer = setTimeout(arguments.callee, b.interval)
                 }, b.interval))
@@ -899,19 +905,21 @@
         })();
         (function() {
             var a = document.createElement("button");
-            a.innerHTML = "Hide";
+            var nam = document.createElement("span");
+            nam.innerHTML = "Background: ";
+            var con = document.createElement("span");
+            con.innerHTML = "Hide";
             a.id = "bg";
-            a.setAttribute("style", "left: 10px; top: 30px; overflow: hidden; position: fixed; width: 100px; z-index: 999;");
+            a.setAttribute("style", "left: 10px; top: 30px; overflow: hidden; position: fixed; width: 200px; z-index: 999;");
+            a.appendChild(nam);
+            a.appendChild(con);
             document.body.appendChild(a);
             if (a) a.onclick = function() {
-                if (a.innerHTML == "Hide")
-                {
-                    a.innerHTML = "Show";
+                if (con.innerHTML == "Hide") {
+                    con.innerHTML = "Show";
                     document.getElementById("rect").setAttribute("visibility", "hidden");
-                }
-                else
-                {
-                    a.innerHTML = "Hide";
+                } else {
+                    con.innerHTML = "Hide";
                     document.getElementById("rect").removeAttribute("visibility");
                 }
             }
@@ -930,6 +938,7 @@
     b.setBackground = function(a) {
         var c = b.createTag("rect"),
             f = {
+                // FIXME: logic_error: bad way of calc
                 x: r.Ft.xi - cw / 2,
                 y: r.Ft.yi - ch / 2,
                 width: cw,
@@ -949,6 +958,7 @@
         svg.setAttribute("width", cw);
         svg.setAttribute("height", ch);
         var rect = document.getElementById("rect");
+        // FIXME: logic_error: bad way of calc
         rect.setAttribute("x", r.Ft.xi - cw / 2);
         rect.setAttribute("y", r.Ft.yi - ch / 2);
         rect.setAttribute("width", cw);

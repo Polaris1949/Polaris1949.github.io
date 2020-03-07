@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <meta charset="utf-8" />
+    <title>Combat BGM | Polaris1949</title>
+</head>
+
+<body>
+<button id="control" onclick="play()" style="position: fixed; top: 10px; right: 10px; width: 200px; z-index:999;"><span>Music: </span><span id="bcon">Play</span></button>
+<audio id="bgm" src="../../assets/sound/rcbgm.mp3" loop="loop" preload="preload" />
+<script type="text/javascript">
+function play()
+{
+    var a = document.getElementById("bcon");
+    var b = document.getElementById("bgm");
+    if (a.innerHTML == "Play")
+    {
+        a.innerHTML = "Stop";
+        b.play();
+    }
+    else
+    {
+        a.innerHTML = "Play";
+        b.pause();
+    }
+}
+</script>
+</body>
+
+</html>
