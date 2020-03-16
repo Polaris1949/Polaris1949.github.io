@@ -10,18 +10,27 @@
 <section class="main-content">
 <h1 id="title">Microcosm Search</h1>
 <hr/>
+<div style="position: fixed; right: 10px;">
+<label for="icon">Icon</label><br/>
+<img id="icon" /><br/>
+<label for="iconsp">Icon SP</label><br/>
+<img id="iconsp" style="position: absolute; right: -100px; top: 100px;" />
+</div>
+<div style="width: 800px;">
 <p>
 KindID:&nbsp;<input id="kid" type="text" value="100" size="8" />&nbsp;
 Name:&nbsp;<input id="name" type="text" size="16" />&nbsp;
 <input id="autodesc" type="checkbox" checked="checked" />
 <label for="autodesc">Auto Desc</label>
 &nbsp;<button onclick="mfind()">Search</button>
-&nbsp;<button onclick="mclear()">Clear</button><br/>
+&nbsp;<button onclick="mclear()">Clear</button>
+&nbsp;<button onclick="init()">Init</button><br/>
 Color:&nbsp;<span id="color">?</span><br/>
 Desc:&nbsp;<span id="desc">?</span><br/>
 LongDesc:&nbsp;<span id="longdesc">?</span><br/>
 ShopDesc:&nbsp;<span id="shopdesc">?</span>
 </p>
+</div>
 </section>
 <script src="mdata.js"></script>
 <script>
@@ -33,6 +42,12 @@ function mclear()
     kid.value = "";
     name.value = "";
 }
+function init()
+{
+    var kid = document.getElementById("kid");
+    kid.value = 0;
+    mfind();
+}
 function mfind()
 {
     var kid = document.getElementById("kid");
@@ -41,6 +56,8 @@ function mfind()
     var desc = document.getElementById("desc");
     var longdesc = document.getElementById("longdesc");
     var shopdesc = document.getElementById("shopdesc");
+    var icon = document.getElementById("icon");
+    var iconsp = document.getElementById("iconsp");
     var ok = false;
     var method = 0;
     if (kid.value.length > 0) method = 1;
@@ -74,6 +91,9 @@ function mfind()
                 else
                     longdesc.innerHTML = "同下";
                 shopdesc.innerHTML = cur.ShopDesc;
+                icon.setAttribute("src", "/assets/img/saint/" + kid.value + ".png");
+                if (cur.ColorType == 4)
+                    iconsp.setAttribute("src", "/assets/img/saint/" + kid.value + "_sp.png");
             }
         }
     });
@@ -85,6 +105,8 @@ function mfind()
         desc.innerHTML = "?";
         longdesc.innerHTML = "?";
         shopdesc.innerHTML = "?";
+        icon.removeAttribute("src");
+        iconsp.removeAttribute("src");
     }
 }
 </script>
