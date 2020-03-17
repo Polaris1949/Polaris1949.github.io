@@ -11,41 +11,75 @@
 <h1 id="title">Microcosm Search</h1>
 <hr/>
 <p>
-KindID:&nbsp;<input id="kid" type="text" value="100" size="8" />&nbsp;
-Name:&nbsp;<input id="name" type="text" size="16" />&nbsp;
-<input id="autodesc" type="checkbox" checked="checked" />
-<label for="autodesc">Auto Desc</label>
-&nbsp;<button onclick="mfind()">Search</button>
-&nbsp;<button onclick="mclear()">Clear</button>
-&nbsp;<button onclick="init()">Init</button><br/>
-Color:&nbsp;<span id="color">?</span><br/>
-Desc:&nbsp;<span id="desc">?</span><br/>
-LongDesc:&nbsp;<span id="longdesc">?</span><br/>
-ShopDesc:&nbsp;<span id="shopdesc">?</span><br/>
-<label for="icon">Icon:&nbsp;</label><br/>
-<img id="icon" /><br/>
-<label for="iconsp">Icon SP:&nbsp;</label><br/>
-<img id="iconsp" />
+<form id="in">
+<label><input type="radio" name="search" value="kid" onclick="search_type(this.value)" checked="checked" />Search by KindID</label>&nbsp;
+<label><input type="radio" name="search" value="name" onclick="search_type(this.value)" />Search by Name</label><br />
+<label id="kid_lb">KindID:&nbsp;<input id="kid_in" type="text" value="100" size="8" /></label>
+<label id="name_lb" hidden="hidden">Name:&nbsp;<input id="name_in" type="text" size="16" /></label>&nbsp;
+<input type="button" onclick="search_input()" value="Search" />
+<input type="button" onclick="iclear()" value="Clear Input" /><br />
+<label><input id="autodesc" type="checkbox" checked="checked" />Auto Desc</label>
+</form>
+<form id="out" hidden="hidden">
+<input type="button" onclick="oclear()" value="Clear Output" /><br />
+<label>KindID:&nbsp;<output id="kid" /></label><br />
+<label>Name:&nbsp;<output id="name" /></label><br />
+<label>Color:&nbsp;<output id="color" /></label><br />
+<label>Desc:&nbsp;<output id="desc" /></label><br />
+<span id="longdesc_s"><label>LongDesc:&nbsp;<output id="longdesc" /></label><br /></span>
+<label>ShopDesc:&nbsp;<output id="shopdesc" /></label><br />
+<label>Icon:&nbsp;<img id="icon" /></label><br />
+<label id="iconsp_lb">Icon SP:&nbsp;<img id="iconsp" /></label>
+</form>
+<form id="err" hidden="hidden">
+<label>Error:&nbsp;<output id="msg" /></label>
+</form>
 </p>
 </section>
 <script src="mdata.js"></script>
 <script>
 var a = JSON.parse(data);
-function mclear()
+var st = "kid";
+function search_type(v)
 {
-    var kid = document.getElementById("kid");
-    var name = document.getElementById("name");
-    kid.value = "";
-    name.value = "";
+    st = v;
+    var kid_lb = document.getElementById("kid_lb");
+    var name_lb = document.getElementById("name_lb");
+    if (v == "kid")
+    {
+        kid_lb.removeAttribute("hidden");
+        name_lb.setAttribute("hidden", "hidden");
+    }
+    else
+    {
+        name_lb.removeAttribute("hidden");
+        kid_lb.setAttribute("hidden", "hidden");
+    }
 }
-function init()
+function search_input()
 {
-    var kid = document.getElementById("kid");
-    kid.value = 0;
-    mfind();
+    var kid = document.getElementById("kid_in");
+    var name = document.getElementById("name_in");
+    var ok = false;
+    var method = 0;
+    if ((st == "kid" && kid.value.length <= 0) || (st == "name" && name.value.length <= 0))
+    { search_error("No input"); return; }
+    a.forEach(function(cur, index, arr)
+    {
+        if (!ok && ((st == "kid" && cur.KindID == kid.value) || (st == "name" && cur.Name == name.value)))
+        {
+            ok = true;
+            search_output(cur);
+        }
+    });
+    if (!ok) search_error("Not Found");
 }
-function mfind()
+function search_output(o)
 {
+    var out = document.getElementById("out");
+    var err = document.getElementById("err");
+    out.removeAttribute("hidden");
+    err.setAttribute("hidden", "hidden");
     var kid = document.getElementById("kid");
     var name = document.getElementById("name");
     var color = document.getElementById("color");
@@ -54,58 +88,61 @@ function mfind()
     var shopdesc = document.getElementById("shopdesc");
     var icon = document.getElementById("icon");
     var iconsp = document.getElementById("iconsp");
-    var ok = false;
-    var method = 0;
-    if (kid.value.length > 0) method = 1;
-    else if (name.value.length > 0) method = 2;
-    else { alert("No input"); return; }
-    a.forEach(function(cur, index, arr)
+    kid.value = o.KindID;
+    name.value = o.Name;
+    color.value = function(ctype)
     {
-        if (!ok)
+        switch (ctype)
         {
-            if (method == 1 && cur.KindID == kid.value)
-            { name.value = cur.Name; ok = true; }
-            if (method == 2 && cur.Name == name.value)
-            { kid.value = cur.KindID; ok = true; }
-            if (ok)
-            {
-                color.innerHTML = function(ctype)
-                {
-                    switch (ctype)
-                    {
-                        case 1: return "日相";
-                        case 2: return "月相";
-                        case 3: return "星相";
-                        case 4: return "传奇";
-                        default: return "未知";
-                    }
-                }(cur.ColorType);
-                desc.innerHTML = cur.Desc;
-                var autodesc = document.getElementById("autodesc").checked;
-                if ((autodesc && cur.ColorType == 4) || !autodesc)
-                    longdesc.innerHTML = cur.LongDesc;
-                else
-                    longdesc.innerHTML = "同下";
-                shopdesc.innerHTML = cur.ShopDesc;
-                icon.setAttribute("src", "/assets/img/saint/" + kid.value + ".png");
-                if (cur.ColorType == 4)
-                    iconsp.setAttribute("src", "/assets/img/saint/" + kid.value + "_sp.png");
-                else
-                    iconsp.removeAttribute("src");
-            }
+            case 1: return "日相";
+            case 2: return "月相";
+            case 3: return "星相";
+            case 4: return "传奇";
+            default: return "未知";
         }
-    });
-    if (!ok)
+    }(o.ColorType);
+    desc.value = o.Desc;
+    var autodesc = document.getElementById("autodesc").checked;
+    var longdesc_s = document.getElementById("longdesc_s");
+    longdesc.value = o.LongDesc;
+    if (autodesc && o.ColorType != 4)
+        longdesc_s.setAttribute("hidden", "hidden");
+    else
+        longdesc_s.removeAttribute("hidden");
+    shopdesc.value = o.ShopDesc;
+    icon.setAttribute("src", "/assets/img/saint/" + kid.value + ".png");
+    var iconsp_lb = document.getElementById("iconsp_lb");
+    if (o.ColorType == 4)
     {
-        if (method == 1) name.value = "未找到";
-        else if (method == 2) kid.value = "未找到";
-        color.innerHTML = "?";
-        desc.innerHTML = "?";
-        longdesc.innerHTML = "?";
-        shopdesc.innerHTML = "?";
-        icon.removeAttribute("src");
-        iconsp.removeAttribute("src");
+        iconsp.setAttribute("src", "/assets/img/saint/" + kid.value + "_sp.png");
+        iconsp_lb.removeAttribute("hidden");
     }
+    else
+    {
+        iconsp.removeAttribute("src");
+        iconsp_lb.setAttribute("hidden", "hidden");
+    }
+}
+function search_error(s)
+{
+    var out = document.getElementById("out");
+    var err = document.getElementById("err");
+    var msg = document.getElementById("msg");
+    msg.value = s;
+    out.setAttribute("hidden", "hidden");
+    err.removeAttribute("hidden");
+}
+function iclear()
+{
+    var kid = document.getElementById("kid_in");
+    var name = document.getElementById("name_in");
+    kid.value = "";
+    name.value = "";
+}
+function oclear()
+{
+    var out = document.getElementById("out");
+    out.setAttribute("hidden", "hidden");
 }
 </script>
 </body>
