@@ -10,7 +10,6 @@
 <section class="main-content">
 <h1 id="title">Microcosm Search</h1>
 <hr/>
-<p>
 <form id="in">
 <label><input type="radio" name="search" value="kid" onclick="search_type(this.value)" checked="checked" />Search by KindID</label>&nbsp;
 <label><input type="radio" name="search" value="name" onclick="search_type(this.value)" />Search by Name</label><br />
@@ -34,7 +33,6 @@
 <form id="err" hidden="hidden">
 <label>Error:&nbsp;<output id="msg" /></label>
 </form>
-</p>
 </section>
 <script src="mdata.js"></script>
 <script>
@@ -72,7 +70,7 @@ function search_input()
             search_output(cur);
         }
     });
-    if (!ok) search_error("Not Found");
+    if (!ok) search_error("Not found");
 }
 function search_output(o)
 {
