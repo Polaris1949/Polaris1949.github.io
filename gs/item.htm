@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>材料数量检验</title>
+<meta charset="utf-8" />
+<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="item.js"></script>
+</head>
+<body>
+<div>
+模块：材料数量检验<br />
+算法：<br />
+<input id="alg1" type="radio" name="alg" value="a1" checked />
+<label for="alg1">折合比较</label><br />
+<input id="alg2" type="radio" name="alg" value="a2" />
+<label for="alg2">合成模拟</label><br />
+类型：<br />
+<input id="typ1" type="radio" name="mtp" value="m1" checked />
+<label for="typ1">三阶材料</label><br />
+<input id="typ2" type="radio" name="mtp" value="m2" />
+<label for="typ2">四阶材料</label><br />
+<input id="typ3" type="radio" name="mtp" value="m3" />
+<label for="typ3">角色经验书</label><br />
+<input id="typ4" type="radio" name="mtp" value="m4" />
+<label for="typ4">武器精锻矿</label><br />
+需求：<br />
+<span id="req"></span>
+供给：<br />
+<span id="sup"></span>
+计算：<input type="button" name="cal" value="计算" /><br />
+<span id="out"></span>
+</div>
+<script>
+var mv, av;
+const mtp_fun = function(val) {
+    if (val == "m1" || val == "m3" || val == "m4") {
+        $("#req").html('高：<input type="number" name="r2" /><br />中：<input type="number" name="r1" /><br />低：<input type="number" name="r0" /><br />');
+        $("#sup").html('高：<input type="number" name="s2" /><br />中：<input type="number" name="s1" /><br />低：<input type="number" name="s0" /><br />');
+    } else {
+        $("#req").html('超：<input type="number" name="r3" /><br />高：<input type="number" name="r2" /><br />中：<input type="number" name="r1" /><br />低：<input type="number" name="r0" /><br />');
+        $("#sup").html('超：<input type="number" name="s3" /><br />高：<input type="number" name="s2" /><br />中：<input type="number" name="s1" /><br />低：<input type="number" name="s0" /><br />');
+    }
+};
+const get_item_input = function(type) {
+    let ret = [];
+    const len = (mv == "m1" || mv == "m3" || mv == "m4" ? 3 : 4);
+    for (let i = 0; i < len; ++i) {
+        ret.push(Number($("input[name={0}{1}]".format(type, i)).val()));
+    }
+    return ret;
+};
+const ilvn = ["低", "中", "高", "超"];
+$(document).ready(function() {
+    mv = $("input[name=mtp]").val();
+    mtp_fun(mv);
+    av = $("input[name=alg]").val();
+    $("input[name=mtp]").change(function() {
+        mv = $(this).val();
+        mtp_fun(mv);
+    });
+    $("input[name=alg]").change(function() {
+        av = $(this).val();
+    });
+    $("input[name=cal]").click(function() {
+        if (av == "a1") {
+            $("#out").html("计算中……<br />");
+            const rarr = get_item_input("r");
+            const sarr = get_item_input("s");
+            let rc, sc;
+            if (mv == "m1" || mv == "m2") {
+                rc = gsItemNumConvert(rarr);
+                sc = gsItemNumConvert(sarr);
+            } else if (mv == "m3") {
+                rc = gsAExpNumConvert(rarr);
+                sc = gsAExpNumConvert(sarr);
+            } else {
+                rc = gsWExpNumConvert(rarr);
+                sc = gsWExpNumConvert(sarr);
+            }
+            const dc = rc - sc;
+            let str = (dc <= 0 ? '<font color="green">已满足</font>需求。<br />' : '<font color="red">未满足</font>需求，缺少{0}个{1}阶材料。<br />'.format(dc, ilvn[0]));
+            str += "折合需求：{0}<br />折合供给：{1}<br />".format(rc, sc);
+            $("#out").html(str);
+        } else {
+            if (mv == "m3" || mv == "m4") {
+                $("#out").html("选择的类型不支持合成模拟。<br />");
+                return;
+            }
+            $("#out").html("模拟中……<br />");
+            const rarr = get_item_input("r");
+            const sarr = get_item_input("s");
+            const ret = gsItemCompSimulate(rarr, sarr);
+            const carr = ret[0];
+            const darr = ret[1];
+            let str = (darr[0] <= 0 ? '<font color="green">已满足</font>需求。<br />' : '<font color="red">未满足</font>需求，缺少{0}个{1}阶材料。<br />'.format(darr[0], ilvn[0]));
+            const len = darr.length;
+            for (let i = 0; i < len; ++i) {
+                str += "消耗{0}个{1}阶材料用于满足需求。<br />".format(rarr[i], ilvn[i]);
+                if (i != len - 1) {
+                    str += "消耗{0}个{1}阶材料用于合成{2}个{3}阶材料。<br />".format(carr[i], ilvn[i], carr[i] / 3, ilvn[i + 1]);
+                }
+            }
+            $("#out").html(str);
+        }
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>祈愿纠缠转换</title>
+<meta charset="utf-8" />
+<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/util.js"></script>
+</head>
+<body>
+<div>
+模块：祈愿纠缠转换<br />
+供给：<br />
+纠缠之缘：<input id="jczy" type="number" /><br />
+创世结晶：<input id="csjj" type="number" /><br />
+&emsp;&emsp;原石：<input id="ys" type="number" /><br />
+&emsp;&emsp;星辉：<input id="xh" type="number" /><br />
+计算：<input type="button" id="calc" value="计算" /><br />
+<span id="out"></span>
+</div>
+<script>
+$(document).ready(function() {
+    $("#calc").click(function() {
+        $("#out").html("计算中……<br />");
+        const jczy = Number($("#jczy").val());
+        const csjj = Number($("#csjj").val());
+        const ys = Number($("#ys").val());
+        const xh = Number($("#xh").val());
+        const res = jczy + Math.floor((csjj + ys) / 160) + Math.floor(xh / 5);
+        $("#out").html("折合纠缠之缘：{0}<br />".format(res));
+    });
+});
+</script>
+</body>
+</html>
