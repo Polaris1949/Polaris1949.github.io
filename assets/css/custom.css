@@ -5,3 +5,8 @@
 .float-right {
     float: right !important;
 }
+
+ul.no-padding {
+    list-style-type: none;
+    padding-inline-start: 0px;
+}
