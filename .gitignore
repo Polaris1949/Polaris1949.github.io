@@ -1,3 +1,6 @@
 # Temporary files
 *.tmp
 *.bak
+
+# Editor preferences
+.vscode
