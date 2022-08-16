@@ -2,21 +2,23 @@
 <html>
 <head>
 <title>祈愿纠缠转换</title>
+<link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="/assets/js/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/util.js"></script>
 </head>
 <body>
-<div>
-模块：祈愿纠缠转换<br />
+<section class="main-content">
+<h1 id="title">祈愿纠缠转换</h1><hr />
 供给：<br />
 纠缠之缘：<input id="jczy" type="number" /><br />
 创世结晶：<input id="csjj" type="number" /><br />
 &emsp;&emsp;原石：<input id="ys" type="number" /><br />
 &emsp;&emsp;星辉：<input id="xh" type="number" /><br />
 计算：<input type="button" id="calc" value="计算" /><br />
-<span id="out"></span>
-</div>
+<output id="out"></output>
+</section>
 <script>
 $(document).ready(function() {
     $("#calc").click(function() {
