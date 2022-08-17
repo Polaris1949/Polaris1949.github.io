@@ -26,22 +26,32 @@
 <li><input id="typ4" type="radio" name="mtp" value="m4" /><label for="typ4">武器精锻矿</label></li>
 </ul>
 <h2>需求</h2>
-<p id="req"></p>
+<ul id="req">
+<li id="lir3" hidden><label for="req3">超：</label><input id="req3" type="number" name="r3" /></li>
+<li><label for="req2">高：</label><input id="req2" type="number" name="r2" /></li>
+<li><label for="req1">中：</label><input id="req1" type="number" name="r1" /></li>
+<li><label for="req0">低：</label><input id="req0" type="number" name="r0" /></li>
+</ul>
 <h2>供给</h2>
-<p id="sup"></p>
+<ul id="sup">
+<li id="lis3" hidden><label for="sup3">超：</label><input id="sup3" type="number" name="s3" /></li>
+<li><label for="sup2">高：</label><input id="sup2" type="number" name="s2" /></li>
+<li><label for="sup1">中：</label><input id="sup1" type="number" name="s1" /></li>
+<li><label for="sup0">低：</label><input id="sup0" type="number" name="s0" /></li>
+</ul>
 <h2>计算</h2>
 <p><input type="button" name="cal" value="计算" /></p>
 <p><output id="out"></output></p>
 </section>
 <script>
 var mv, av;
-const mtp_fun = function(val) {
+const typ_fun = function(val) {
     if (val == "m1" || val == "m3" || val == "m4") {
-        $("#req").html('高：<input type="number" name="r2" /><br />中：<input type="number" name="r1" /><br />低：<input type="number" name="r0" /><br />');
-        $("#sup").html('高：<input type="number" name="s2" /><br />中：<input type="number" name="s1" /><br />低：<input type="number" name="s0" /><br />');
+        $("#lir3").attr("hidden", true);
+        $("#lis3").attr("hidden", true);
     } else {
-        $("#req").html('超：<input type="number" name="r3" /><br />高：<input type="number" name="r2" /><br />中：<input type="number" name="r1" /><br />低：<input type="number" name="r0" /><br />');
-        $("#sup").html('超：<input type="number" name="s3" /><br />高：<input type="number" name="s2" /><br />中：<input type="number" name="s1" /><br />低：<input type="number" name="s0" /><br />');
+        $("#lir3").attr("hidden", false);
+        $("#lis3").attr("hidden", false);
     }
 };
 const get_item_input = function(type) {
@@ -55,11 +65,11 @@ const get_item_input = function(type) {
 const ilvn = ["低", "中", "高", "超"];
 $(document).ready(function() {
     mv = $("input[name=mtp]").val();
-    mtp_fun(mv);
+    typ_fun(mv);
     av = $("input[name=alg]").val();
     $("input[name=mtp]").change(function() {
         mv = $(this).val();
-        mtp_fun(mv);
+        typ_fun(mv);
     });
     $("input[name=alg]").change(function() {
         av = $(this).val();
